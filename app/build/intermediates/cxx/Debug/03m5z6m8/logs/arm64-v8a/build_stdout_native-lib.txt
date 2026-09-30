@@ -1,0 +1,2 @@
+ninja: Entering directory `C:\Users\zahra\NativeCppApp\app\.cxx\Debug\03m5z6m8\arm64-v8a'
+ninja: no work to do.

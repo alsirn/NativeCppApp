@@ -1,0 +1,1 @@
+C:\Users\zahra\NativeCppApp\app\src\main\cpp\CMakeLists.txt

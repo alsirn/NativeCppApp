@@ -1,0 +1,28 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.nativecppapp-debug-4:/values_values.arsc.flat",
+            "map": [
+                {
+                    "source": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\res\\values\\themes.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "59",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "262"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "255"
+                    }
+                }
+            ]
+        }
+    ]
+}
