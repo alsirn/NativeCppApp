@@ -1,0 +1,38 @@
+{
+  "buildFiles": [
+    "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\cmake\\3.30.5\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\zahra\\NativeCppApp\\app\\.cxx\\Debug\\03m5z6m8\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\cmake\\3.30.5\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\zahra\\NativeCppApp\\app\\.cxx\\Debug\\03m5z6m8\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "native-lib::@6890427a1f51a3e7e1df": {
+      "toolchain": "toolchain",
+      "abi": "x86",
+      "artifactName": "native-lib",
+      "output": "C:\\Users\\zahra\\NativeCppApp\\app\\build\\intermediates\\cxx\\Debug\\03m5z6m8\\obj\\x86\\libnative-lib.so",
+      "runtimeFiles": []
+    }
+  },
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

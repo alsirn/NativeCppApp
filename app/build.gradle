@@ -8,7 +8,7 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'com.example.nativecppapp'
+        applicationId "com.example.nativecppapp"
         minSdk 24
         targetSdk 35
         versionCode 1
@@ -19,6 +19,15 @@ android {
                 cppFlags "-std=c++17"
             }
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    kotlinOptions {
+        jvmTarget = "21"
     }
 
     buildTypes {

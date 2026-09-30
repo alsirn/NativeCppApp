@@ -4,3 +4,6 @@
 0	20	0	clean	6a8a3f0c16636bb0
 62	1131	8124506689912946	CMakeFiles/native-lib.dir/native-lib.cpp.o	2e204b28888cd0eb
 1132	1519	8124506693808844	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	f223e1774ddc0fc6
+0	21	0	clean	6a8a3f0c16636bb0
+26	489	8124510472328965	CMakeFiles/native-lib.dir/native-lib.cpp.o	2e204b28888cd0eb
+490	926	8124510476753163	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	f223e1774ddc0fc6
