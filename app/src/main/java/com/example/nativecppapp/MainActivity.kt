@@ -23,19 +23,30 @@ class MainActivity : Activity() {
         textView.text = "Belum memanggil C++"
         textView.textSize = 24f
 
-        val button = Button(this)
-        button.text = "Panggil C++"
+        val buttonHello = Button(this)
+        buttonHello.text = "Panggil C++"
 
-        button.setOnClickListener {
+        buttonHello.setOnClickListener {
             textView.text = helloFromCpp()
+        }
+
+        val buttonAdd = Button(this)
+        buttonAdd.text = "Hitung 10 + 20"
+
+        buttonAdd.setOnClickListener {
+            val result = addNumbers(10, 20)
+            textView.text = "Hasil C++: $result"
         }
 
         val layout = LinearLayout(this)
 
         layout.orientation = LinearLayout.VERTICAL
         layout.addView(textView)
-        layout.addView(button)
+        layout.addView(buttonHello)
+        layout.addView(buttonAdd)
 
         setContentView(layout)
     }
+
+    private external fun addNumbers(a: Int, b: Int): Int
 }

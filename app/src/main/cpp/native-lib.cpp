@@ -1,10 +1,12 @@
 #include <jni.h>
 
 extern "C"
-JNIEXPORT jstring JNICALL
-Java_com_example_nativecppapp_MainActivity_helloFromCpp(
+JNIEXPORT jint JNICALL
+Java_com_example_nativecppapp_MainActivity_addNumbers(
         JNIEnv* env,
-        jobject /* this */) {
+        jobject /* this */,
+        jint a,
+        jint b) {
 
-    return env->NewStringUTF("Hello from C++!");
+    return a + b;
 }
