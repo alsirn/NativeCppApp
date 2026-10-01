@@ -8,31 +8,66 @@
 8        android:minSdkVersion="24"
 9        android:targetSdkVersion="35" />
 10
-11    <application
-11-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:5:5-20:19
-12        android:debuggable="true"
-13        android:extractNativeLibs="false"
-14        android:label="Native C++ App"
-14-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:7:9-39
-15        android:theme="@style/AppTheme" >
-15-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:6:9-40
-16        <activity
-16-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:9:9-18:20
-17            android:name="com.example.nativecppapp.MainActivity"
-17-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:10:13-41
-18            android:exported="true" >
-18-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:11:13-36
-19            <intent-filter>
-19-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:13:13-16:29
-20                <action android:name="android.intent.action.MAIN" />
-20-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:14:17-69
-20-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:14:25-66
+11    <!-- Media & Storage Permissions for Media Library and Video Export -->
+12    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+12-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:5:5-76
+12-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:5:22-73
+13    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+13-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:6:5-75
+13-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:6:22-72
+14    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+14-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:7:5-75
+14-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:7:22-72
+15    <uses-permission
+15-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:8:5-107
+16        android:name="android.permission.READ_EXTERNAL_STORAGE"
+16-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:8:22-77
+17        android:maxSdkVersion="32" />
+17-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:8:78-104
+18    <uses-permission
+18-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:9:5-108
+19        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+19-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:9:22-78
+20        android:maxSdkVersion="28" />
+20-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:9:79-105
 21
-22                <category android:name="android.intent.category.LAUNCHER" />
-22-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:15:17-77
-22-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:15:27-74
-23            </intent-filter>
-24        </activity>
-25    </application>
-26
-27</manifest>
+22    <application
+22-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:11:5-30:19
+23        android:allowBackup="true"
+23-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:12:9-35
+24        android:debuggable="true"
+25        android:extractNativeLibs="false"
+26        android:hardwareAccelerated="true"
+26-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:13:9-43
+27        android:icon="@android:drawable/sym_def_app_icon"
+27-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:14:9-58
+28        android:label="MotionLab"
+28-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:15:9-34
+29        android:roundIcon="@android:drawable/sym_def_app_icon"
+29-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:16:9-63
+30        android:supportsRtl="true"
+30-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:17:9-35
+31        android:theme="@style/AppTheme" >
+31-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:18:9-40
+32        <activity
+32-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:20:9-28:20
+33            android:name="com.example.nativecppapp.MainActivity"
+33-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:21:13-41
+34            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+34-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:23:13-87
+35            android:exported="true" >
+35-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:22:13-36
+36            <intent-filter>
+36-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:24:13-27:29
+37                <action android:name="android.intent.action.MAIN" />
+37-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:25:17-69
+37-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:25:25-66
+38
+39                <category android:name="android.intent.category.LAUNCHER" />
+39-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:26:17-77
+39-->C:\Users\zahra\NativeCppApp\app\src\main\AndroidManifest.xml:26:27-74
+40            </intent-filter>
+41        </activity>
+42    </application>
+43
+44</manifest>

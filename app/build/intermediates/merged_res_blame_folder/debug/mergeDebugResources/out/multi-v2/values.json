@@ -9,17 +9,17 @@
                         "startLines": "3",
                         "startColumns": "4",
                         "startOffsets": "59",
-                        "endLines": "6",
+                        "endLines": "8",
                         "endColumns": "12",
-                        "endOffsets": "262"
+                        "endOffsets": "391"
                     },
                     "to": {
                         "startLines": "2",
                         "startColumns": "4",
                         "startOffsets": "55",
-                        "endLines": "5",
+                        "endLines": "7",
                         "endColumns": "12",
-                        "endOffsets": "255"
+                        "endOffsets": "382"
                     }
                 }
             ]

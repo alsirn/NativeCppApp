@@ -1,8 +1,62 @@
 [
 {
   "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
-  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -o CMakeFiles\\native-lib.dir\\native-lib.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\native-lib.cpp",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\native-lib.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\native-lib.cpp",
   "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\native-lib.cpp",
   "output": "CMakeFiles\\native-lib.dir\\native-lib.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\animation\\CubicBezier.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\animation\\CubicBezier.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\animation\\CubicBezier.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\animation\\CubicBezier.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\animation\\AnimatedProperty.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\animation\\AnimatedProperty.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\animation\\AnimatedProperty.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\animation\\AnimatedProperty.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\model\\Transform.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\model\\Transform.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\model\\Transform.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\model\\Transform.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\model\\Layer.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\model\\Layer.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\model\\Layer.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\model\\Layer.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\model\\Project.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\model\\Project.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\model\\Project.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\model\\Project.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\io\\ProjectSerializer.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\io\\ProjectSerializer.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\io\\ProjectSerializer.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\io\\ProjectSerializer.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\render\\SoftwarePreviewRenderer.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\render\\SoftwarePreviewRenderer.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\render\\SoftwarePreviewRenderer.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\render\\SoftwarePreviewRenderer.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\render\\GpuCompositor.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\render\\GpuCompositor.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\render\\GpuCompositor.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\render\\GpuCompositor.cpp.o"
+},
+{
+  "directory": "C:/Users/zahra/NativeCppApp/app/.cxx/Debug/03m5z6m8/x86",
+  "command": "C:\\Users\\zahra\\AppData\\Local\\Android\\Sdk\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android24 --sysroot=C:/Users/zahra/AppData/Local/Android/Sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_lib_EXPORTS -IC:/Users/zahra/NativeCppApp/app/src/main/cpp -IC:/Users/zahra/NativeCppApp/app/src/main/cpp/core -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -std=c++17 -fPIC -o CMakeFiles\\native-lib.dir\\core\\media\\MediaDecoder.cpp.o -c C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\media\\MediaDecoder.cpp",
+  "file": "C:\\Users\\zahra\\NativeCppApp\\app\\src\\main\\cpp\\core\\media\\MediaDecoder.cpp",
+  "output": "CMakeFiles\\native-lib.dir\\core\\media\\MediaDecoder.cpp.o"
 }
 ]

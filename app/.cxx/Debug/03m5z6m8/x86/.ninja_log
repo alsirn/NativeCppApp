@@ -1,3 +1,17 @@
 # ninja log v5
-1	194	8124510538323316	CMakeFiles/native-lib.dir/native-lib.cpp.o	77057497e3105222
-198	428	8124510540884642	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86/libnative-lib.so	cd332de0f8f73c29
+20	4369	8124783871409318	CMakeFiles/native-lib.dir/native-lib.cpp.o	e18cd0bfb842f7d1
+70	3968	8124783867281197	CMakeFiles/native-lib.dir/core/model/Transform.cpp.o	e5152d44ff7b61e1
+113	4614	8124783873876953	CMakeFiles/native-lib.dir/core/model/Project.cpp.o	6f16cba3856fa635
+51	531	8124797569524405	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86/libnative-lib.so	3acc7f02cf571712
+97	3799	8124783865039473	CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o	67cadcdca374fb8d
+36	4312	8124783870837567	CMakeFiles/native-lib.dir/core/animation/AnimatedProperty.cpp.o	216e6b8b3847093
+4	2820	8124783855655409	CMakeFiles/native-lib.dir/core/animation/CubicBezier.cpp.o	89f2b3e34f4223aa
+52	4050	8124783868027388	CMakeFiles/native-lib.dir/core/model/Layer.cpp.o	56dae9517e3d298f
+131	5409	8124783881766741	CMakeFiles/native-lib.dir/core/io/ProjectSerializer.cpp.o	a463d20c619523a0
+46	2039	8124804509197429	CMakeFiles/native-lib.dir/core/media/MediaDecoder.cpp.o	ef1f870736894487
+14	2519	8124804513921887	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	c9ffb7000a88cafa
+33	2799	8124804516732946	CMakeFiles/native-lib.dir/native-lib.cpp.o	e18cd0bfb842f7d1
+2799	3120	8124804519937285	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86/libnative-lib.so	663da65419eedb25
+151	4166	8124808986181422	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	c9ffb7000a88cafa
+115	4604	8124808990395983	CMakeFiles/native-lib.dir/native-lib.cpp.o	e18cd0bfb842f7d1
+4605	5157	8124808996235876	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86/libnative-lib.so	663da65419eedb25

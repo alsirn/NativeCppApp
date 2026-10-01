@@ -1,7 +1,21 @@
 # ninja log v5
-0	20	0	clean	6a8a3f0c16636bb0
-0	351	8124507968899001	CMakeFiles/native-lib.dir/native-lib.cpp.o	737c3f02a961b24d
-354	663	8124507971986314	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/armeabi-v7a/libnative-lib.so	a4e351dbb4b5c280
+4	4044	8124783797054318	CMakeFiles/native-lib.dir/core/model/Layer.cpp.o	e367b24ff7606eeb
 1	24	0	clean	6a8a3f0c16636bb0
-2	265	8124510480787250	CMakeFiles/native-lib.dir/native-lib.cpp.o	737c3f02a961b24d
-267	649	8124510484330323	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/armeabi-v7a/libnative-lib.so	a4e351dbb4b5c280
+55	4441	8124783801479516	CMakeFiles/native-lib.dir/native-lib.cpp.o	8b18ba4f7f222822
+24	596	8124797560899501	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/armeabi-v7a/libnative-lib.so	f5f76e6aecdb5e6c
+127	4109	8124783797967458	CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o	39a260d728b365b
+36	4615	8124783803258696	CMakeFiles/native-lib.dir/core/animation/AnimatedProperty.cpp.o	6fdce8f748249115
+72	3142	8124783787589422	CMakeFiles/native-lib.dir/core/animation/CubicBezier.cpp.o	9c08efc3e8a0c956
+20	3975	8124783796629018	CMakeFiles/native-lib.dir/core/model/Transform.cpp.o	52ab368aae9b2d2c
+92	4757	8124783804708356	CMakeFiles/native-lib.dir/core/model/Project.cpp.o	ad069d3d12f2436b
+109	5979	8124783816846890	CMakeFiles/native-lib.dir/core/io/ProjectSerializer.cpp.o	1d1f24cf2bb566db
+102	2311	8124804074247705	CMakeFiles/native-lib.dir/core/media/MediaDecoder.cpp.o	9dc62f99928d104c
+87	2736	8124804078479275	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	d052f750723aa2fe
+33	3040	8124804081510954	CMakeFiles/native-lib.dir/native-lib.cpp.o	8b18ba4f7f222822
+3041	3337	8124804084421505	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/armeabi-v7a/libnative-lib.so	131d6ed57d56855a
+46	5586	8124808930994236	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	d052f750723aa2fe
+23	5771	8124808932834508	CMakeFiles/native-lib.dir/native-lib.cpp.o	8b18ba4f7f222822
+5776	6545	8124808940282327	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/armeabi-v7a/libnative-lib.so	131d6ed57d56855a
+122	5172	8124813472944408	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	d052f750723aa2fe
+89	5404	8124813474870683	CMakeFiles/native-lib.dir/native-lib.cpp.o	8b18ba4f7f222822
+5404	6106	8124813482105378	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/armeabi-v7a/libnative-lib.so	131d6ed57d56855a
