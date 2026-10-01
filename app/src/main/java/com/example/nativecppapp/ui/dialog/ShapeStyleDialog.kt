@@ -13,11 +13,12 @@ class ShapeStyleDialog(
     context: Context,
     private val layerId: String,
     private val layerName: String,
-    private val layerType: String, // SHAPE or TEXT
+    private val targetLayerType: String, // SHAPE or TEXT
     private val initialColor: Int,
     private val initialWidthOrSize: Double,
     private val initialTextContent: String = "",
-    private val onStyleUpdated: (color: Int, size: Double, text: String) -> Unit
+    private val onStyleUpdated: (color: Int, size: Double, text: String) -> Unit,
+    private val onApplyAnimationPreset: ((presetName: String) -> Unit)? = null
 ) : Dialog(context) {
 
     private var selectedColor = initialColor
@@ -37,11 +38,11 @@ class ShapeStyleDialog(
         // Header
         val headerBox = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(0, 0, 0, dp(12))
+            setPadding(0, 0, 0, dp(10))
         }
 
         val tagView = TextView(context).apply {
-            text = "GAYA & TAMPILAN ELEMEN"
+            text = if (targetLayerType == "TEXT") "TIPOGRAFI & GAYA TEKS" else "GAYA & BENTUK VEKTOR"
             textSize = 9f
             typeface = Typeface.MONOSPACE
             setTextColor(Color.parseColor("#818CF8"))
@@ -57,10 +58,22 @@ class ShapeStyleDialog(
         headerBox.addView(titleView)
         root.addView(headerBox)
 
+        val scrollView = ScrollView(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+            isVerticalScrollBarEnabled = false
+        }
+        val content = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+
         // 1. Text Content Input (if TEXT layer)
-        if (layerType == "TEXT") {
+        if (targetLayerType == "TEXT") {
             val txtLabel = createSectionTitle("KONTEN TEKS")
-            root.addView(txtLabel)
+            content.addView(txtLabel)
 
             val input = EditText(context).apply {
                 setText(textContent)
@@ -73,7 +86,7 @@ class ShapeStyleDialog(
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     dp(40)
-                ).apply { bottomMargin = dp(14) }
+                ).apply { bottomMargin = dp(8) }
             }
             input.addTextChangedListener(object : android.text.TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -83,12 +96,47 @@ class ShapeStyleDialog(
                 }
                 override fun afterTextChanged(p0: android.text.Editable?) {}
             })
-            root.addView(input)
+            content.addView(input)
+
+            // Text Case helpers
+            val caseRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(12) }
+                layoutParams = lp
+            }
+            val cases = listOf(
+                Pair("KAPITAL", { textContent.uppercase() }),
+                Pair("kecil", { textContent.lowercase() }),
+                Pair("Judul", { textContent.split(" ").joinToString(" ") { it.replaceFirstChar { c -> c.uppercase() } } })
+            )
+            cases.forEachIndexed { i, c ->
+                val btn = Button(context).apply {
+                    text = c.first
+                    textSize = 10f
+                    minHeight = 0
+                    minimumHeight = 0
+                    includeFontPadding = false
+                    setPadding(0, 0, 0, 0)
+                    gravity = Gravity.CENTER
+                    layoutParams = LinearLayout.LayoutParams(0, dp(30), 1f).apply {
+                        if (i != cases.size - 1) marginEnd = dp(6)
+                    }
+                    setTextColor(MotionTheme.TEXT_PRIMARY)
+                    setBackgroundColor(MotionTheme.SURFACE_HIGH)
+                    setOnClickListener {
+                        textContent = c.second.invoke()
+                        input.setText(textContent)
+                        onStyleUpdated(selectedColor, currentSize, textContent)
+                    }
+                }
+                caseRow.addView(btn)
+            }
+            content.addView(caseRow)
         }
 
         // 2. Color Palette Section
         val colorTitle = createSectionTitle("PALET WARNA")
-        root.addView(colorTitle)
+        content.addView(colorTitle)
 
         val colorRow = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -121,12 +169,12 @@ class ShapeStyleDialog(
             colorRow.addView(colorBox)
             colorViews.add(colorBox)
         }
-        root.addView(colorRow)
+        content.addView(colorRow)
 
         // 3. Size / Dimension Section
-        val sizeLabelText = if (layerType == "TEXT") "UKURAN FONT" else "DIMENSI UKURAN"
+        val sizeLabelText = if (targetLayerType == "TEXT") "UKURAN HURUF (FONT SIZE)" else "DIMENSI UKURAN"
         val sizeTitle = createSectionTitle(sizeLabelText)
-        root.addView(sizeTitle)
+        content.addView(sizeTitle)
 
         val sizeReadout = TextView(context).apply {
             text = String.format("%.0f px", currentSize)
@@ -135,10 +183,10 @@ class ShapeStyleDialog(
             setTextColor(MotionTheme.TEXT_PRIMARY)
             setPadding(0, 0, 0, dp(4))
         }
-        root.addView(sizeReadout)
+        content.addView(sizeReadout)
 
-        val minSize = if (layerType == "TEXT") 18 else 40
-        val maxSize = if (layerType == "TEXT") 160 else 800
+        val minSize = if (targetLayerType == "TEXT") 18 else 40
+        val maxSize = if (targetLayerType == "TEXT") 160 else 800
 
         val sizeSeek = SeekBar(context).apply {
             max = maxSize - minSize
@@ -155,11 +203,53 @@ class ShapeStyleDialog(
                 override fun onStopTrackingTouch(p0: SeekBar?) {}
             })
         }
-        root.addView(sizeSeek)
+        content.addView(sizeSeek)
+
+        // 4. Quick Animation Preset Templates (Pop, Slide Up, Fade)
+        if (onApplyAnimationPreset != null) {
+            val animTitle = createSectionTitle("PRESET GERAK OTOMATIS (KEYFRAME)")
+            content.addView(animTitle)
+
+            val animRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(0, dp(4), 0, dp(14))
+            }
+
+            val presets = listOf(
+                Pair("Pop In (Zoom)", "POP_ZOOM"),
+                Pair("Slide Up", "SLIDE_UP"),
+                Pair("Fade Reveal", "FADE_IN")
+            )
+            presets.forEachIndexed { i, p ->
+                val btn = Button(context).apply {
+                    text = p.first
+                    textSize = 10f
+                    minHeight = 0
+                    minimumHeight = 0
+                    includeFontPadding = false
+                    setPadding(0, 0, 0, 0)
+                    gravity = Gravity.CENTER
+                    layoutParams = LinearLayout.LayoutParams(0, dp(34), 1f).apply {
+                        if (i != presets.size - 1) marginEnd = dp(6)
+                    }
+                    setTextColor(Color.WHITE)
+                    setBackgroundColor(Color.parseColor("#4F46E5"))
+                    setOnClickListener {
+                        onApplyAnimationPreset.invoke(p.second)
+                        Toast.makeText(context, "Animasi ${p.first} diterapkan!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                animRow.addView(btn)
+            }
+            content.addView(animRow)
+        }
+
+        scrollView.addView(content)
+        root.addView(scrollView)
 
         // Done Button
         val btnDone = Button(context).apply {
-            text = "Selesai"
+            text = "Tutup & Selesai"
             textSize = 13f
             typeface = Typeface.DEFAULT_BOLD
             minHeight = 0
@@ -169,8 +259,8 @@ class ShapeStyleDialog(
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(42)
-            ).apply { topMargin = dp(16) }
+                dp(40)
+            ).apply { topMargin = dp(12) }
             setTextColor(MotionTheme.CANVAS_BG)
             setBackgroundColor(MotionTheme.TEXT_PRIMARY)
             setOnClickListener { dismiss() }
@@ -183,7 +273,6 @@ class ShapeStyleDialog(
     private fun updateColorSelectionUI(colorRow: LinearLayout) {
         for (i in 0 until colorRow.childCount) {
             val child = colorRow.getChildAt(i)
-            // Add a subtle border or scale
             child.alpha = 1.0f
         }
     }

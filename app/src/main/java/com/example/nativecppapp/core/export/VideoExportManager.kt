@@ -38,6 +38,7 @@ class VideoExportManager(private val context: Context) {
         totalFrames: Long,
         outputFile: File,
         audioFilePath: String? = null,
+        bitrateBps: Int? = null,
         brightness: Float = 0.0f,
         contrast: Float = 1.0f,
         saturation: Float = 1.0f,
@@ -112,7 +113,7 @@ class VideoExportManager(private val context: Context) {
                 val format = MediaFormat.createVideoFormat(mimeType, encWidth, encHeight).apply {
                     setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
                     val calculatedBitrate = ((encWidth * encHeight * 4.0 * fps) / 30.0).toInt().coerceIn(4_000_000, 20_000_000)
-                    setInteger(MediaFormat.KEY_BIT_RATE, calculatedBitrate)
+                    setInteger(MediaFormat.KEY_BIT_RATE, bitrateBps ?: calculatedBitrate)
                     setInteger(MediaFormat.KEY_FRAME_RATE, fps.toInt().coerceAtLeast(1))
                     setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
                 }

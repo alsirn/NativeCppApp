@@ -1,2 +1,2 @@
 ninja: Entering directory `C:\Users\zahra\NativeCppApp\app\.cxx\Debug\03m5z6m8\x86_64'
-[1/1] Linking CXX shared library C:\Users\zahra\NativeCppApp\app\build\intermediates\cxx\Debug\03m5z6m8\obj\x86_64\libnative-lib.so
+ninja: no work to do.

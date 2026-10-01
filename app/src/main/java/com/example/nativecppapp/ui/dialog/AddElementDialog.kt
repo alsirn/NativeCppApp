@@ -128,6 +128,33 @@ class AddElementDialog(
         textRow.addView(btnAddText)
         root.addView(textRow)
 
+        val quickTextRow = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, 0, 0, dp(14))
+        }
+        val quickTexts = listOf("Judul Utama", "Lower Third", "Quotes", "#Trending")
+        quickTexts.forEachIndexed { i, q ->
+            val chip = Button(context).apply {
+                text = q
+                textSize = 10f
+                minHeight = 0
+                minimumHeight = 0
+                includeFontPadding = false
+                setPadding(dp(8), 0, dp(8), 0)
+                gravity = Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(0, dp(28), 1f).apply {
+                    if (i != quickTexts.size - 1) marginEnd = dp(4)
+                }
+                setTextColor(MotionTheme.TEXT_MUTED)
+                setBackgroundColor(MotionTheme.SURFACE_HIGH)
+                setOnClickListener {
+                    textInput.setText(q)
+                }
+            }
+            quickTextRow.addView(chip)
+        }
+        root.addView(quickTextRow)
+
         // 3. Media Section
         val mediaLabel = TextView(context).apply {
             text = "MEDIA PERANGKAT"

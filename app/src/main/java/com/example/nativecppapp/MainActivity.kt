@@ -870,16 +870,64 @@ class MainActivity : Activity() {
                                     context = this@MainActivity,
                                     layerId = track.id,
                                     layerName = track.name,
-                                    layerType = track.type,
+                                    targetLayerType = track.type,
                                     initialColor = Color.parseColor("#6366F1"),
                                     initialWidthOrSize = if (track.type == "TEXT") 54.0 else 240.0,
                                     initialTextContent = track.name,
                                     onStyleUpdated = { color, size, text ->
                                         if (track.type == "SHAPE") {
                                             NativeEngineBridge.nativeUpdateShapeLayer(currentProjectPtr, track.id, color, size, size)
+                                            viewportView.selectedLayerWidth = size.toFloat()
+                                            viewportView.selectedLayerHeight = size.toFloat()
+                                            if (::graphViewportView.isInitialized) {
+                                                graphViewportView.selectedLayerWidth = size.toFloat()
+                                                graphViewportView.selectedLayerHeight = size.toFloat()
+                                            }
                                         } else if (track.type == "TEXT") {
                                             NativeEngineBridge.nativeUpdateTextLayer(currentProjectPtr, track.id, text, color, size)
+                                            val tw = (text.length * size * 0.9).toFloat().coerceAtLeast(100f)
+                                            val th = (size * 1.2).toFloat().coerceAtLeast(40f)
+                                            viewportView.selectedLayerWidth = tw
+                                            viewportView.selectedLayerHeight = th
+                                            if (::graphViewportView.isInitialized) {
+                                                graphViewportView.selectedLayerWidth = tw
+                                                graphViewportView.selectedLayerHeight = th
+                                            }
                                         }
+                                        renderCurrentFrame()
+                                    },
+                                    onApplyAnimationPreset = { presetName ->
+                                        val sFrame = track.startFrame
+                                        when (presetName) {
+                                            "POP_ZOOM" -> {
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleX", sFrame, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleX", sFrame + 24, 1.2, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.25, 1.0, 0.5, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleX", sFrame + 36, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleY", sFrame, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleY", sFrame + 24, 1.2, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.25, 1.0, 0.5, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleY", sFrame + 36, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                                                listOf(sFrame, sFrame + 24, sFrame + 36).forEach { f ->
+                                                    if (!track.keyframeFrames.contains(f)) track.keyframeFrames.add(f)
+                                                }
+                                            }
+                                            "SLIDE_UP" -> {
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "posY", sFrame, 400.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.22, 1.0, 0.36, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "posY", sFrame + 30, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                                                listOf(sFrame, sFrame + 30).forEach { f ->
+                                                    if (!track.keyframeFrames.contains(f)) track.keyframeFrames.add(f)
+                                                }
+                                            }
+                                            "FADE_IN" -> {
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "opacity", sFrame, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                                                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "opacity", sFrame + 25, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                                                listOf(sFrame, sFrame + 25).forEach { f ->
+                                                    if (!track.keyframeFrames.contains(f)) track.keyframeFrames.add(f)
+                                                }
+                                            }
+                                        }
+                                        track.keyframeFrames.sort()
+                                        timelineView.invalidate()
+                                        graphTimelineView?.invalidate()
                                         renderCurrentFrame()
                                     }
                                 ).show()
@@ -3125,9 +3173,20 @@ class MainActivity : Activity() {
         if (track != null) {
             val state = NativeEngineBridge.evaluateTransform(currentProjectPtr, track.id, currentFrame.toDouble())
             if (state != null) {
+                val lw = if (track.type == "TEXT") (track.name.length * 48f * 0.85f).coerceAtLeast(140f)
+                         else if (track.name.contains("Bar")) 720f
+                         else if (track.name.contains("Wipe")) 1080f
+                         else 260f
+                val lh = if (track.type == "TEXT") 64f
+                         else if (track.name.contains("Bar")) 140f
+                         else if (track.name.contains("Wipe")) 1920f
+                         else 260f
+
                 if (::viewportView.isInitialized) {
                     viewportView.selectedLayerX = state.posX.toFloat()
                     viewportView.selectedLayerY = state.posY.toFloat()
+                    viewportView.selectedLayerWidth = lw
+                    viewportView.selectedLayerHeight = lh
                     viewportView.selectedLayerScaleX = state.scaleX.toFloat()
                     viewportView.selectedLayerScaleY = state.scaleY.toFloat()
                     viewportView.selectedLayerRotation = state.rotation.toFloat()
@@ -3136,6 +3195,8 @@ class MainActivity : Activity() {
                 if (::graphViewportView.isInitialized) {
                     graphViewportView.selectedLayerX = state.posX.toFloat()
                     graphViewportView.selectedLayerY = state.posY.toFloat()
+                    graphViewportView.selectedLayerWidth = lw
+                    graphViewportView.selectedLayerHeight = lh
                     graphViewportView.selectedLayerScaleX = state.scaleX.toFloat()
                     graphViewportView.selectedLayerScaleY = state.scaleY.toFloat()
                     graphViewportView.selectedLayerRotation = state.rotation.toFloat()

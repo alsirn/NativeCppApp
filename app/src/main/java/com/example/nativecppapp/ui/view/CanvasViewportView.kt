@@ -44,6 +44,8 @@ class CanvasViewportView(context: Context) : View(context) {
     // Selected layer transform coordinates on screen
     var selectedLayerX: Float = 0f
     var selectedLayerY: Float = 0f
+    var selectedLayerWidth: Float = 240f
+    var selectedLayerHeight: Float = 240f
     var selectedLayerScaleX: Float = 1.0f
     var selectedLayerScaleY: Float = 1.0f
     var selectedLayerRotation: Float = 0.0f
@@ -199,16 +201,17 @@ class CanvasViewportView(context: Context) : View(context) {
         // 5. Draw interactive Selection Bounding Box & Transformation Handles
         val boxCenterX = canvasRect.centerX() + (selectedLayerX * canvasRect.width() / projectWidth)
         val boxCenterY = canvasRect.centerY() + (selectedLayerY * canvasRect.height() / projectHeight)
-        val boxRadius = (45f * density) * selectedLayerScaleX.coerceIn(0.6f, 2.5f)
+        val halfW = (((selectedLayerWidth * 0.5f) * canvasRect.width() / projectWidth) * selectedLayerScaleX.coerceAtLeast(0.1f)).coerceAtLeast(24f * density)
+        val halfH = (((selectedLayerHeight * 0.5f) * canvasRect.height() / projectHeight) * selectedLayerScaleY.coerceAtLeast(0.1f)).coerceAtLeast(24f * density)
 
         canvas.save()
         canvas.rotate(selectedLayerRotation, boxCenterX, boxCenterY)
 
         val boxRect = RectF(
-            boxCenterX - boxRadius,
-            boxCenterY - boxRadius,
-            boxCenterX + boxRadius,
-            boxCenterY + boxRadius
+            boxCenterX - halfW,
+            boxCenterY - halfH,
+            boxCenterX + halfW,
+            boxCenterY + halfH
         )
         canvas.drawRect(boxRect, selectionBoxPaint)
 
@@ -290,7 +293,8 @@ class CanvasViewportView(context: Context) : View(context) {
         val density = resources.displayMetrics.density
         val boxCenterX = canvasRect.centerX() + (selectedLayerX * canvasRect.width() / projectWidth)
         val boxCenterY = canvasRect.centerY() + (selectedLayerY * canvasRect.height() / projectHeight)
-        val boxRadius = (45f * density) * selectedLayerScaleX.coerceIn(0.6f, 2.5f)
+        val halfW = (((selectedLayerWidth * 0.5f) * canvasRect.width() / projectWidth) * selectedLayerScaleX.coerceAtLeast(0.1f)).coerceAtLeast(24f * density)
+        val halfH = (((selectedLayerHeight * 0.5f) * canvasRect.height() / projectHeight) * selectedLayerScaleY.coerceAtLeast(0.1f)).coerceAtLeast(24f * density)
 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -305,14 +309,14 @@ class CanvasViewportView(context: Context) : View(context) {
                 val localX = dx * cosR - dy * sinR
                 val localY = dx * sinR + dy * cosR
 
-                val stemDist = kotlin.math.hypot(localX, localY - (-boxRadius - (24f * density)))
-                val cornerRadiusHit = 26f * density
+                val stemDist = kotlin.math.hypot(localX, localY - (-halfH - (24f * density)))
+                val cornerRadiusHit = 28f * density
 
                 val cornerDists = listOf(
-                    kotlin.math.hypot(localX - (-boxRadius), localY - (-boxRadius)),
-                    kotlin.math.hypot(localX - boxRadius, localY - (-boxRadius)),
-                    kotlin.math.hypot(localX - (-boxRadius), localY - boxRadius),
-                    kotlin.math.hypot(localX - boxRadius, localY - boxRadius)
+                    kotlin.math.hypot(localX - (-halfW), localY - (-halfH)),
+                    kotlin.math.hypot(localX - halfW, localY - (-halfH)),
+                    kotlin.math.hypot(localX - (-halfW), localY - halfH),
+                    kotlin.math.hypot(localX - halfW, localY - halfH)
                 )
 
                 if (stemDist <= cornerRadiusHit) {
