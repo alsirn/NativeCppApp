@@ -112,6 +112,10 @@ public:
     bool isVisible = true;
     bool isLocked = false;
 
+    // Motion Blur & Layer VFX
+    bool motionBlurEnabled = false;
+    double motionBlurStrength = 1.0; // Shutter angle multiplier (1.0 = 180° shutter)
+
     // Blend Mode
     BlendMode blendMode = BlendMode::NORMAL;
 
@@ -136,11 +140,15 @@ public:
         return frame >= startFrame && frame < (startFrame + durationFrames);
     }
 
+    bool isActiveAtFrame(double frame) const {
+        return frame >= static_cast<double>(startFrame) && frame < static_cast<double>(startFrame + durationFrames);
+    }
+
     int64_t getRelativeFrame(int64_t frame) const {
         return frame - startFrame;
     }
 
-    TransformState evaluateTransform(int64_t frame, int projectWidth = 1080, int projectHeight = 1920) const {
+    TransformState evaluateTransform(double frame, int projectWidth = 1080, int projectHeight = 1920) const {
         TransformState state = transform.evaluate(frame);
 
         // Smooth cubic easing: 3t^2 - 2t^3
@@ -150,12 +158,12 @@ public:
             return t * t * (3.0 - 2.0 * t);
         };
 
-        int64_t relFrame = frame - startFrame;
-        int64_t framesLeft = (startFrame + durationFrames) - frame;
+        double relFrame = frame - static_cast<double>(startFrame);
+        double framesLeft = static_cast<double>(startFrame + durationFrames) - frame;
 
         // Apply In-Transition
-        if (inTransition != TransitionType::NONE && inTransitionDuration > 0 && relFrame >= 0 && relFrame < inTransitionDuration) {
-            double t = smoothStep(static_cast<double>(relFrame) / static_cast<double>(inTransitionDuration));
+        if (inTransition != TransitionType::NONE && inTransitionDuration > 0 && relFrame >= 0.0 && relFrame < static_cast<double>(inTransitionDuration)) {
+            double t = smoothStep(relFrame / static_cast<double>(inTransitionDuration));
             switch (inTransition) {
                 case TransitionType::FADE:
                     state.opacity *= t;
@@ -193,8 +201,8 @@ public:
         }
 
         // Apply Out-Transition
-        if (outTransition != TransitionType::NONE && outTransitionDuration > 0 && framesLeft >= 0 && framesLeft < outTransitionDuration) {
-            double t = smoothStep(static_cast<double>(framesLeft) / static_cast<double>(outTransitionDuration));
+        if (outTransition != TransitionType::NONE && outTransitionDuration > 0 && framesLeft >= 0.0 && framesLeft < static_cast<double>(outTransitionDuration)) {
+            double t = smoothStep(framesLeft / static_cast<double>(outTransitionDuration));
             switch (outTransition) {
                 case TransitionType::FADE:
                     state.opacity *= t;

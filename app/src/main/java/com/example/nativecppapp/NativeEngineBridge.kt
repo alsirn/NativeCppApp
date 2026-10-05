@@ -194,6 +194,23 @@ object NativeEngineBridge {
         frame: Long
     ): Boolean
 
+    external fun nativeSetLayerMotionBlur(
+        projectPtr: Long,
+        layerId: String,
+        enabled: Boolean,
+        strength: Double
+    ): Boolean
+
+    external fun nativeGetLayerMotionBlurEnabled(
+        projectPtr: Long,
+        layerId: String
+    ): Boolean
+
+    external fun nativeGetLayerMotionBlurStrength(
+        projectPtr: Long,
+        layerId: String
+    ): Double
+
     external fun nativeGetKeyframeValues(
         projectPtr: Long,
         layerId: String,

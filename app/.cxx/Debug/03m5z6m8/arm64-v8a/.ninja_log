@@ -58,3 +58,15 @@
 149	1197	8125336496694630	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	d1aeb572ab8cfc56
 241	2158	8125527274381895	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	d1aeb572ab8cfc56
 242	912	8125574237264055	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	d1aeb572ab8cfc56
+171	1934	8126111068426640	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	d1aeb572ab8cfc56
+132	15756	8126137463097450	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	80cd72f6c0dd0973
+93	16844	8126137473980313	CMakeFiles/native-lib.dir/native-lib.cpp.o	a48d75b4a19a59f3
+46	4515	8126140381931240	CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o	ecb6811b51ea51ca
+4516	4897	8126140385967883	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	d1aeb572ab8cfc56
+235	11316	8126181842182817	CMakeFiles/native-lib.dir/core/model/Layer.cpp.o	ba11db1187b254e8
+540	11649	8126181846794587	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	80cd72f6c0dd0973
+297	13791	8126181868074735	CMakeFiles/native-lib.dir/native-lib.cpp.o	a48d75b4a19a59f3
+441	14883	8126181877673494	CMakeFiles/native-lib.dir/core/model/Project.cpp.o	b381b1b575a05841
+368	15824	8126181887936893	CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o	ecb6811b51ea51ca
+319	18750	8126181911447604	CMakeFiles/native-lib.dir/core/io/ProjectSerializer.cpp.o	91ec6acfe60e62a8
+18751	19700	8126181927263171	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/arm64-v8a/libnative-lib.so	d1aeb572ab8cfc56

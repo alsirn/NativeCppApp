@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.widget.*
 import com.example.nativecppapp.ui.theme.MotionTheme
@@ -15,8 +16,35 @@ class ShaderEffectsDialog(
     private var saturation: Float,
     private var vignette: Float,
     private var filterMode: Int,
+    private val selectedLayerName: String? = null,
+    private var motionBlurEnabled: Boolean = false,
+    private var motionBlurStrength: Float = 1.0f,
+    private val onMotionBlurChanged: ((enabled: Boolean, strength: Float) -> Unit)? = null,
     private val onEffectsChanged: (b: Float, c: Float, s: Float, v: Float, mode: Int) -> Unit
 ) : Dialog(context) {
+
+    // Overload for backward compatibility
+    constructor(
+        context: Context,
+        brightness: Float,
+        contrast: Float,
+        saturation: Float,
+        vignette: Float,
+        filterMode: Int,
+        onEffectsChanged: (b: Float, c: Float, s: Float, v: Float, mode: Int) -> Unit
+    ) : this(
+        context = context,
+        brightness = brightness,
+        contrast = contrast,
+        saturation = saturation,
+        vignette = vignette,
+        filterMode = filterMode,
+        selectedLayerName = null,
+        motionBlurEnabled = false,
+        motionBlurStrength = 1.0f,
+        onMotionBlurChanged = null,
+        onEffectsChanged = onEffectsChanged
+    )
 
     private fun dp(v: Int): Int = (v * context.resources.displayMetrics.density).toInt()
 
@@ -34,7 +62,7 @@ class ShaderEffectsDialog(
         }
 
         val tagView = TextView(context).apply {
-            text = "EFEK SHADER GPU & COLOR GRADING"
+            text = "STUDIO EFEK & VFX GRAFIKA"
             textSize = 9f
             typeface = Typeface.MONOSPACE
             setTextColor(Color.parseColor("#818CF8"))
@@ -42,7 +70,7 @@ class ShaderEffectsDialog(
         headerBox.addView(tagView)
 
         val header = TextView(context).apply {
-            text = "Filter Visual & Warna"
+            text = "Efek Visual & Buram Gerak"
             setTextColor(MotionTheme.TEXT_PRIMARY)
             textSize = 18f
             typeface = Typeface.DEFAULT_BOLD
@@ -60,6 +88,157 @@ class ShaderEffectsDialog(
         }
         val content = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
+        }
+
+        // 0. Dynamic Motion Blur (VFX Shutter Angle)
+        if (onMotionBlurChanged != null) {
+            val mbContainer = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp(14), dp(12), dp(14), dp(14))
+                val bgDrawable = GradientDrawable().apply {
+                    setColor(Color.parseColor("#171724"))
+                    cornerRadius = dp(10).toFloat()
+                    setStroke(dp(1), Color.parseColor("#2E3048"))
+                }
+                background = bgDrawable
+                val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = dp(16)
+                }
+                layoutParams = lp
+            }
+
+            // Section Tag & Header
+            val mbTag = TextView(context).apply {
+                text = "VFX DINAMIS LAPISAN"
+                textSize = 9f
+                typeface = Typeface.MONOSPACE
+                setTextColor(Color.parseColor("#06B6D4")) // Cyan
+            }
+            mbContainer.addView(mbTag)
+
+            // Row with Title + Switch
+            val mbRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, dp(4), 0, dp(8))
+            }
+
+            val mbTextCol = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+            val mbTitle = TextView(context).apply {
+                text = "Buram Gerak (Motion Blur)"
+                textSize = 14f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(MotionTheme.TEXT_PRIMARY)
+            }
+            val targetName = selectedLayerName ?: "Lapisan Terpilih"
+            val mbSubtitle = TextView(context).apply {
+                text = "Target: $targetName • Multi-sample shutter"
+                textSize = 10f
+                setTextColor(MotionTheme.TEXT_MUTED)
+            }
+            mbTextCol.addView(mbTitle)
+            mbTextCol.addView(mbSubtitle)
+            mbRow.addView(mbTextCol)
+
+            val mbSwitch = Switch(context).apply {
+                isChecked = motionBlurEnabled
+            }
+            mbRow.addView(mbSwitch)
+            mbContainer.addView(mbRow)
+
+            // Shutter Angle & Strength controls (sub layout)
+            val shutterBox = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                alpha = if (motionBlurEnabled) 1.0f else 0.4f
+            }
+
+            val shutterLabel = TextView(context).apply {
+                val deg = (motionBlurStrength * 180f).toInt()
+                text = "Shutter Angle: ${String.format("%.1fx", motionBlurStrength)} ($deg°)"
+                textSize = 11f
+                typeface = Typeface.MONOSPACE
+                setTextColor(Color.parseColor("#06B6D4"))
+                setPadding(0, dp(4), 0, dp(2))
+            }
+            shutterBox.addView(shutterLabel)
+
+            val shutterSeek = SeekBar(context).apply {
+                this.max = 100 // maps to 0.2x .. 2.0x
+                val initialProg = (((motionBlurStrength - 0.2f) / 1.8f) * 100f).toInt().coerceIn(0, 100)
+                progress = initialProg
+                isEnabled = motionBlurEnabled
+                setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                        if (fromUser) {
+                            val str = 0.2f + (progress / 100f) * 1.8f
+                            motionBlurStrength = str
+                            val deg = (str * 180f).toInt()
+                            shutterLabel.text = "Shutter Angle: ${String.format("%.1fx", str)} ($deg°)"
+                            onMotionBlurChanged.invoke(motionBlurEnabled, motionBlurStrength)
+                        }
+                    }
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+                })
+            }
+            shutterBox.addView(shutterSeek)
+
+            // Presets for Motion Blur (Halus 90°, Alami 180°, Sinematik 360°)
+            val mbPresetRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(0, dp(4), 0, 0)
+            }
+            data class MbPreset(val name: String, val strength: Float)
+            val mbPresets = listOf(
+                MbPreset("Halus (90°)", 0.5f),
+                MbPreset("Alami (180°)", 1.0f),
+                MbPreset("Sinematik (360°)", 2.0f)
+            )
+            mbPresets.forEachIndexed { idx, p ->
+                val pBtn = Button(context).apply {
+                    text = p.name
+                    textSize = 9.5f
+                    minHeight = 0
+                    minimumHeight = 0
+                    includeFontPadding = false
+                    setPadding(dp(4), dp(6), dp(4), dp(6))
+                    gravity = Gravity.CENTER
+                    layoutParams = LinearLayout.LayoutParams(0, dp(30), 1f).apply {
+                        if (idx < mbPresets.size - 1) marginEnd = dp(6)
+                    }
+                    setTextColor(MotionTheme.TEXT_PRIMARY)
+                    setBackgroundColor(MotionTheme.SURFACE_HIGH)
+                    isEnabled = motionBlurEnabled
+                    setOnClickListener {
+                        motionBlurStrength = p.strength
+                        val deg = (p.strength * 180f).toInt()
+                        shutterLabel.text = "Shutter Angle: ${String.format("%.1fx", p.strength)} ($deg°)"
+                        shutterSeek.progress = (((p.strength - 0.2f) / 1.8f) * 100f).toInt().coerceIn(0, 100)
+                        onMotionBlurChanged.invoke(motionBlurEnabled, motionBlurStrength)
+                    }
+                }
+                mbPresetRow.addView(pBtn)
+            }
+            shutterBox.addView(mbPresetRow)
+            mbContainer.addView(shutterBox)
+
+            mbSwitch.setOnCheckedChangeListener { _, isChecked ->
+                motionBlurEnabled = isChecked
+                shutterBox.alpha = if (isChecked) 1.0f else 0.4f
+                shutterSeek.isEnabled = isChecked
+                for (ci in 0 until mbPresetRow.childCount) {
+                    mbPresetRow.getChildAt(ci).isEnabled = isChecked
+                }
+                onMotionBlurChanged.invoke(motionBlurEnabled, motionBlurStrength)
+            }
+
+            content.addView(mbContainer)
         }
 
         // 1. One-Tap Cinematic Grading Presets

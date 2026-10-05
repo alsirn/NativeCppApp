@@ -109,6 +109,17 @@ class CanvasViewportView(context: Context) : View(context) {
         isAntiAlias = true
     }
 
+    private val snapGuidePaint = Paint().apply {
+        color = Color.parseColor("#EC4899") // Vibrant pink/magenta guide line
+        style = Paint.Style.STROKE
+        strokeWidth = 2f * resources.displayMetrics.density
+        pathEffect = DashPathEffect(floatArrayOf(12f, 8f), 0f)
+        isAntiAlias = true
+    }
+
+    private var showSnapGuideX = false
+    private var showSnapGuideY = false
+
     var activeSurface: android.view.Surface? = null
     private val canvasRect = RectF()
     fun getCanvasRect(): RectF = canvasRect
@@ -197,6 +208,14 @@ class CanvasViewportView(context: Context) : View(context) {
             canvasRect.bottom - safeMarginY,
             guidePaint
         )
+
+        // 4b. Draw Center Snap Guides when magnetically snapped to X=0 or Y=0
+        if (showSnapGuideX) {
+            canvas.drawLine(canvasRect.centerX(), canvasRect.top, canvasRect.centerX(), canvasRect.bottom, snapGuidePaint)
+        }
+        if (showSnapGuideY) {
+            canvas.drawLine(canvasRect.left, canvasRect.centerY(), canvasRect.right, canvasRect.centerY(), snapGuidePaint)
+        }
 
         // 5. Draw interactive Selection Bounding Box & Transformation Handles
         val boxCenterX = canvasRect.centerX() + (selectedLayerX * canvasRect.width() / projectWidth)
@@ -383,8 +402,22 @@ class CanvasViewportView(context: Context) : View(context) {
                         val scaleX = projectWidth.toFloat() / canvasRect.width()
                         val scaleY = projectHeight.toFloat() / canvasRect.height()
 
-                        selectedLayerX += deltaX * scaleX
-                        selectedLayerY += deltaY * scaleY
+                        var newX = selectedLayerX + (deltaX * scaleX)
+                        var newY = selectedLayerY + (deltaY * scaleY)
+
+                        // Magnetic snap to project center (0, 0) within 24px threshold
+                        val snapThreshold = 24f
+                        val isSnappedX = kotlin.math.abs(newX) < snapThreshold
+                        val isSnappedY = kotlin.math.abs(newY) < snapThreshold
+
+                        if (isSnappedX) newX = 0f
+                        if (isSnappedY) newY = 0f
+
+                        showSnapGuideX = isSnappedX
+                        showSnapGuideY = isSnappedY
+
+                        selectedLayerX = newX
+                        selectedLayerY = newY
 
                         onLayerPositionChanged?.invoke(selectedLayerX, selectedLayerY)
                         invalidate()
@@ -396,6 +429,9 @@ class CanvasViewportView(context: Context) : View(context) {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_POINTER_UP -> {
                 dragMode = DragMode.NONE
                 isDragging = false
+                showSnapGuideX = false
+                showSnapGuideY = false
+                invalidate()
                 return true
             }
         }

@@ -15,11 +15,14 @@ import android.view.Gravity
 import android.view.View
 import android.widget.*
 import com.example.nativecppapp.core.audio.AudioPlaybackManager
+import com.example.nativecppapp.core.history.ProjectHistoryManager
 import com.example.nativecppapp.ui.dialog.AddElementDialog
 import com.example.nativecppapp.ui.dialog.BlendModeDialog
+import com.example.nativecppapp.ui.dialog.AudioMixerDialog
 import com.example.nativecppapp.ui.dialog.ExportDialog
 import com.example.nativecppapp.ui.dialog.KeyframeEditorDialog
 import com.example.nativecppapp.ui.dialog.NewProjectDialog
+import com.example.nativecppapp.ui.dialog.ProjectTemplatesDialog
 import com.example.nativecppapp.ui.dialog.ShaderEffectsDialog
 import com.example.nativecppapp.ui.dialog.ShapeStyleDialog
 import com.example.nativecppapp.ui.dialog.TransformInspectorDialog
@@ -74,6 +77,12 @@ class MainActivity : Activity() {
     private var effectVignette = 0.0f
     private var effectFilterMode = 0
 
+    // History & Undo/Redo Engine
+    private val historyManager = ProjectHistoryManager()
+    private lateinit var btnUndo: Button
+    private lateinit var btnRedo: Button
+    private var copiedTransformState: NativeEngineBridge.TransformState? = null
+
     // UI References
     private lateinit var viewportView: CanvasViewportView
     private lateinit var graphViewportView: CanvasViewportView
@@ -123,6 +132,7 @@ class MainActivity : Activity() {
         // 1. Top Header Bar
         val headerBar = createHeaderBar()
         rootLayout.addView(headerBar)
+        updateUndoRedoButtonStates()
 
         // 2. Middle Content Deck (Houses Editor, Graph, and Media views)
         val middleContainer = FrameLayout(this).apply {
@@ -164,7 +174,7 @@ class MainActivity : Activity() {
         renderCurrentFrame()
     }
 
-    private fun initCppProject() {
+    private fun initCppProject(templateId: String = "DEFAULT") {
         if (currentProjectPtr != 0L) {
             NativeEngineBridge.nativeDestroyProject(currentProjectPtr)
         }
@@ -182,54 +192,180 @@ class MainActivity : Activity() {
         )
         compositorPtr = NativeEngineBridge.nativeCreateGpuCompositor()
 
-        // Preload standard 3-layer stack from PRD & Stitch design
-        NativeEngineBridge.nativeAddShapeLayer(
-            projectPtr = currentProjectPtr,
-            id = "shape_circle_1",
-            name = "Lingkaran 1",
-            shapeType = NativeEngineBridge.ShapeType.CIRCLE.value,
-            startFrame = 0,
-            durationFrames = projectDurationFrames,
-            fillColor = 0xFFFFFFFF.toInt(),
-            width = 300.0,
-            height = 300.0
-        )
+        when (templateId) {
+            "TIKTOK_VIRAL" -> {
+                // 1. Text Title Pop-In
+                NativeEngineBridge.nativeAddTextLayer(
+                    currentProjectPtr, "text_viral", "VIRAL REELS", "VIRAL REELS",
+                    0, projectDurationFrames, Color.WHITE, 64.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_viral", "scaleX", 0, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_viral", "scaleX", 25, 1.25, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.25, 1.0, 0.5, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_viral", "scaleX", 40, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_viral", "scaleY", 0, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_viral", "scaleY", 25, 1.25, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.25, 1.0, 0.5, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_viral", "scaleY", 40, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
 
-        NativeEngineBridge.nativeAddMediaLayer(
-            projectPtr = currentProjectPtr,
-            id = "media_video_1",
-            name = "Video Latar 01",
-            filePath = "/storage/emulated/0/DCIM/sample.mp4",
-            isVideo = true,
-            startFrame = 0,
-            durationFrames = projectDurationFrames
-        )
+                // 2. Cyber Bar Sweep
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_bar", "Cyber Bar", NativeEngineBridge.ShapeType.RECTANGLE.value,
+                    0, projectDurationFrames, Color.parseColor("#06B6D4"), 720.0, 110.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_bar", "posX", 0, -1000.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.16, 1.0, 0.3, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_bar", "posX", 30, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
 
-        currentAudioFilePath = "/storage/emulated/0/Music/soundtrack.mp3"
-        audioPlaybackManager?.loadAudio(currentAudioFilePath ?: "")
+                // 3. Drop Bubble
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_bubble", "Drop Bubble", NativeEngineBridge.ShapeType.CIRCLE.value,
+                    15, projectDurationFrames - 15, Color.parseColor("#F43F5E"), 180.0, 180.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_bubble", "posY", 15, 600.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_bubble", "posY", 45, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
 
-        NativeEngineBridge.nativeAddAudioLayer(
-            projectPtr = currentProjectPtr,
-            id = "audio_track_1",
-            name = "Audio Trek 01",
-            filePath = currentAudioFilePath ?: "",
-            startFrame = 0,
-            durationFrames = projectDurationFrames
-        )
+                currentAudioFilePath = "/storage/emulated/0/Music/beat.mp3"
+                NativeEngineBridge.nativeAddAudioLayer(currentProjectPtr, "audio_1", "Synth Beat", currentAudioFilePath ?: "", 0, projectDurationFrames)
+                effectFilterMode = 5 // Neon Glow
+            }
+            "YOUTUBE_LOWER_THIRD" -> {
+                // Speaker Name
+                NativeEngineBridge.nativeAddTextLayer(
+                    currentProjectPtr, "text_speaker", "JOHN DOE", "JOHN DOE",
+                    0, projectDurationFrames, Color.WHITE, 56.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_speaker", "posY", 0, 300.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.22, 1.0, 0.36, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_speaker", "posY", 35, 180.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
 
-        // Preload keyframes for Lingkaran 1 (PosX Bezier Animation)
-        NativeEngineBridge.addKeyframe(
-            currentProjectPtr, "shape_circle_1", "posX",
-            NativeEngineBridge.KeyframeData(0, -320.0, NativeEngineBridge.InterpolationMode.BEZIER, 0.42, 0.0, 0.58, 1.0)
-        )
-        NativeEngineBridge.addKeyframe(
-            currentProjectPtr, "shape_circle_1", "posX",
-            NativeEngineBridge.KeyframeData(projectDurationFrames / 2, 0.0, NativeEngineBridge.InterpolationMode.BEZIER, 0.42, 0.0, 0.58, 1.0)
-        )
-        NativeEngineBridge.addKeyframe(
-            currentProjectPtr, "shape_circle_1", "posX",
-            NativeEngineBridge.KeyframeData(projectDurationFrames, 320.0, NativeEngineBridge.InterpolationMode.BEZIER, 0.42, 0.0, 0.58, 1.0)
-        )
+                // Subtitle Role
+                NativeEngineBridge.nativeAddTextLayer(
+                    currentProjectPtr, "text_role", "Creative Director", "Creative Director",
+                    10, projectDurationFrames - 10, Color.parseColor("#F59E0B"), 36.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_role", "opacity", 10, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_role", "opacity", 40, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                // Card Backdrop
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_card", "Latar Kartu", NativeEngineBridge.ShapeType.RECTANGLE.value,
+                    0, projectDurationFrames, Color.parseColor("#18181B"), 900.0, 180.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_card", "posX", 0, -1200.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.16, 1.0, 0.3, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_card", "posX", 30, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                // Accent Line
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_accent", "Aksen Garis", NativeEngineBridge.ShapeType.RECTANGLE.value,
+                    10, projectDurationFrames - 10, Color.parseColor("#06B6D4"), 900.0, 10.0
+                )
+                effectFilterMode = 0
+            }
+            "LOGO_REVEAL" -> {
+                // Diamond
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_diamond", "Logo Diamond", NativeEngineBridge.ShapeType.STAR.value,
+                    0, projectDurationFrames, Color.parseColor("#818CF8"), 240.0, 240.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_diamond", "scaleX", 0, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_diamond", "scaleX", 30, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_diamond", "scaleY", 0, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_diamond", "scaleY", 30, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_diamond", "rotation", 0, 0.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_diamond", "rotation", 60, 180.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                // Ring
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_ring", "Cincin Pendar", NativeEngineBridge.ShapeType.CIRCLE.value,
+                    20, projectDurationFrames - 20, Color.parseColor("#38BDF8"), 260.0, 260.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_ring", "scaleX", 20, 0.5, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_ring", "scaleX", 60, 2.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_ring", "scaleY", 20, 0.5, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "shape_ring", "scaleY", 60, 2.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                // Text Brand
+                NativeEngineBridge.nativeAddTextLayer(
+                    currentProjectPtr, "text_brand", "MOTIONLAB", "MOTIONLAB",
+                    35, projectDurationFrames - 35, Color.WHITE, 48.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_brand", "opacity", 35, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_brand", "opacity", 60, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                effectFilterMode = 0
+            }
+            "CYBERPUNK_GLITCH" -> {
+                NativeEngineBridge.nativeAddTextLayer(
+                    currentProjectPtr, "text_cyber1", "NIGHT CITY", "NIGHT CITY",
+                    0, projectDurationFrames, Color.parseColor("#06B6D4"), 60.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_cyber1", "scaleX", 0, 0.2, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.34, 1.56, 0.64, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_cyber1", "scaleX", 25, 1.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                NativeEngineBridge.nativeAddTextLayer(
+                    currentProjectPtr, "text_cyber2", "PROJECT 2088", "PROJECT 2088",
+                    15, projectDurationFrames - 15, Color.parseColor("#F43F5E"), 44.0
+                )
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_cyber2", "posX", 15, -600.0, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.16, 1.0, 0.3, 1.0)
+                NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, "text_cyber2", "posX", 45, 0.0, NativeEngineBridge.InterpolationMode.LINEAR.value, 0.0, 0.0, 1.0, 1.0)
+
+                NativeEngineBridge.nativeAddShapeLayer(
+                    currentProjectPtr, "shape_cyberbox", "Grid Cyber", NativeEngineBridge.ShapeType.RECTANGLE.value,
+                    0, projectDurationFrames, Color.WHITE, 600.0, 300.0
+                )
+
+                effectFilterMode = 4 // RGB Split
+                effectContrast = 1.35f
+                effectSaturation = 1.6f
+            }
+            else -> {
+                // Preload standard 3-layer stack from PRD & Stitch design
+                NativeEngineBridge.nativeAddShapeLayer(
+                    projectPtr = currentProjectPtr,
+                    id = "shape_circle_1",
+                    name = "Lingkaran 1",
+                    shapeType = NativeEngineBridge.ShapeType.CIRCLE.value,
+                    startFrame = 0,
+                    durationFrames = projectDurationFrames,
+                    fillColor = 0xFFFFFFFF.toInt(),
+                    width = 300.0,
+                    height = 300.0
+                )
+
+                NativeEngineBridge.nativeAddMediaLayer(
+                    projectPtr = currentProjectPtr,
+                    id = "media_video_1",
+                    name = "Video Latar 01",
+                    filePath = "/storage/emulated/0/DCIM/sample.mp4",
+                    isVideo = true,
+                    startFrame = 0,
+                    durationFrames = projectDurationFrames
+                )
+
+                currentAudioFilePath = "/storage/emulated/0/Music/soundtrack.mp3"
+                audioPlaybackManager?.loadAudio(currentAudioFilePath ?: "")
+
+                NativeEngineBridge.nativeAddAudioLayer(
+                    projectPtr = currentProjectPtr,
+                    id = "audio_track_1",
+                    name = "Audio Trek 01",
+                    filePath = currentAudioFilePath ?: "",
+                    startFrame = 0,
+                    durationFrames = projectDurationFrames
+                )
+
+                NativeEngineBridge.addKeyframe(
+                    currentProjectPtr, "shape_circle_1", "posX",
+                    NativeEngineBridge.KeyframeData(0, -320.0, NativeEngineBridge.InterpolationMode.BEZIER, 0.42, 0.0, 0.58, 1.0)
+                )
+                NativeEngineBridge.addKeyframe(
+                    currentProjectPtr, "shape_circle_1", "posX",
+                    NativeEngineBridge.KeyframeData(projectDurationFrames / 2, 0.0, NativeEngineBridge.InterpolationMode.BEZIER, 0.42, 0.0, 0.58, 1.0)
+                )
+                NativeEngineBridge.addKeyframe(
+                    currentProjectPtr, "shape_circle_1", "posX",
+                    NativeEngineBridge.KeyframeData(projectDurationFrames, 320.0, NativeEngineBridge.InterpolationMode.BEZIER, 0.42, 0.0, 0.58, 1.0)
+                )
+            }
+        }
+        takeProjectSnapshot()
     }
 
     private fun createHeaderBar(): View {
@@ -270,6 +406,36 @@ class MainActivity : Activity() {
         }
         infoCol.addView(subtitleInfo)
         titleRow.addView(infoCol)
+
+        btnUndo = Button(this).apply {
+            text = "↶"
+            textSize = 14f
+            minHeight = 0
+            minimumHeight = 0
+            includeFontPadding = false
+            setPadding(0, 0, 0, 0)
+            gravity = Gravity.CENTER
+            setTextColor(MotionTheme.TEXT_PRIMARY)
+            setBackgroundColor(MotionTheme.SURFACE_CONTAINER)
+            layoutParams = LinearLayout.LayoutParams(dp(32), dp(28)).apply { marginEnd = dp(4) }
+            setOnClickListener { performUndo() }
+        }
+        titleRow.addView(btnUndo)
+
+        btnRedo = Button(this).apply {
+            text = "↷"
+            textSize = 14f
+            minHeight = 0
+            minimumHeight = 0
+            includeFontPadding = false
+            setPadding(0, 0, 0, 0)
+            gravity = Gravity.CENTER
+            setTextColor(MotionTheme.TEXT_PRIMARY)
+            setBackgroundColor(MotionTheme.SURFACE_CONTAINER)
+            layoutParams = LinearLayout.LayoutParams(dp(32), dp(28)).apply { marginEnd = dp(6) }
+            setOnClickListener { performRedo() }
+        }
+        titleRow.addView(btnRedo)
 
         val brandBadge = TextView(this).apply {
             text = "MOTIONLAB"
@@ -315,6 +481,33 @@ class MainActivity : Activity() {
             }.show()
         }
         actionRow.addView(btnNew)
+
+        val btnTemplate = createHeaderButton("Template") {
+            ProjectTemplatesDialog(this) { tId, title, w, h, fps, dur ->
+                projectTitle = title
+                projectWidth = w
+                projectHeight = h
+                projectFps = fps
+                projectDurationFrames = dur
+                titleView.text = title
+                subtitleInfo.text = "$w×$h • ${fps.toInt()}fps"
+                viewportView.updateProjectAspect(w, h)
+                initCppProject(tId)
+                viewportView.activeSurface?.let { surf ->
+                    if (compositorPtr != 0L) {
+                        NativeEngineBridge.nativeInitializeGpuCompositor(compositorPtr, surf, projectWidth, projectHeight)
+                        val r = viewportView.getCanvasRect()
+                        NativeEngineBridge.nativeUpdateGpuViewport(compositorPtr, r.left, r.top, r.width(), r.height())
+                        NativeEngineBridge.nativeSetGpuShaderEffects(compositorPtr, effectBrightness, effectContrast, effectSaturation, effectVignette, effectFilterMode)
+                    }
+                }
+                populateTimelineTracks()
+                currentFrame = 0L
+                renderCurrentFrame()
+                Toast.makeText(this, "Template dimuat: $title", Toast.LENGTH_SHORT).show()
+            }.show()
+        }
+        actionRow.addView(btnTemplate)
 
         val btnSave = createHeaderButton("Simpan") {
             try {
@@ -363,6 +556,8 @@ class MainActivity : Activity() {
                             }
                             currentFrame = 0L
                             renderCurrentFrame()
+                            historyManager.resetWithInitialState(json)
+                            updateUndoRedoButtonStates()
                             Toast.makeText(this, "Proyek dimuat: $projectTitle", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(this, "Gagal mem-parsing file proyek", Toast.LENGTH_SHORT).show()
@@ -596,6 +791,7 @@ class MainActivity : Activity() {
                         graphTimelineView.invalidate()
                     }
                     renderCurrentFrame()
+                    takeProjectSnapshot()
                 }
 
                 onKeyframeClicked = { kfFrame ->
@@ -619,6 +815,7 @@ class MainActivity : Activity() {
                         graphTimelineView.invalidate()
                     }
                     renderCurrentFrame()
+                    takeProjectSnapshot()
                 }
             }
             addView(timelineView)
@@ -646,6 +843,7 @@ class MainActivity : Activity() {
                     populateTimelineTracks()
                     updateProjectDurationFromLayers()
                     renderCurrentFrame()
+                    takeProjectSnapshot()
                     Toast.makeText(this, "Layer '${track.name}' dipotong di frame $currentFrame", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Playhead (Frame $currentFrame) di luar rentang aktif layer", Toast.LENGTH_SHORT).show()
@@ -736,7 +934,7 @@ class MainActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
         }
 
-        val tools = listOf("Keyframe", "Edit Bentuk", "Transform", "Transisi", "Blend", "Efek", "Duplikat", "Hapus", "Naikkan", "Turunkan")
+        val tools = listOf("Keyframe", "Edit Bentuk", "Transform", "Transisi", "Blend", "Efek", "Audio Mixer", "Duplikat", "Hapus", "Naikkan", "Turunkan")
         for (t in tools) {
             val btn = Button(this).apply {
                 text = t
@@ -791,6 +989,7 @@ class MainActivity : Activity() {
                                         track.outTransitionDuration = outDur
                                         timelineView.invalidate()
                                         renderCurrentFrame()
+                                        takeProjectSnapshot()
                                     }
                                 ).show()
                             } else {
@@ -810,6 +1009,7 @@ class MainActivity : Activity() {
                                         track.blendMode = mode
                                         timelineView.invalidate()
                                         renderCurrentFrame()
+                                        takeProjectSnapshot()
                                     }
                                 ).show()
                             } else {
@@ -895,6 +1095,7 @@ class MainActivity : Activity() {
                                             }
                                         }
                                         renderCurrentFrame()
+                                        takeProjectSnapshot()
                                     },
                                     onApplyAnimationPreset = { presetName ->
                                         val sFrame = track.startFrame
@@ -929,6 +1130,7 @@ class MainActivity : Activity() {
                                         timelineView.invalidate()
                                         graphTimelineView?.invalidate()
                                         renderCurrentFrame()
+                                        takeProjectSnapshot()
                                     }
                                 ).show()
                             } else {
@@ -936,24 +1138,63 @@ class MainActivity : Activity() {
                             }
                         }
                         "Efek" -> {
+                            val track = timelineView.tracks.getOrNull(timelineView.selectedTrackIndex)
+                                ?: timelineView.tracks.firstOrNull()?.also { timelineView.selectedTrackIndex = 0 }
+                            val curMbEnabled = if (track != null) {
+                                NativeEngineBridge.nativeGetLayerMotionBlurEnabled(currentProjectPtr, track.id)
+                            } else false
+                            val curMbStrength = if (track != null) {
+                                NativeEngineBridge.nativeGetLayerMotionBlurStrength(currentProjectPtr, track.id).toFloat()
+                            } else 1.0f
+
                             ShaderEffectsDialog(
-                                this@MainActivity,
-                                effectBrightness,
-                                effectContrast,
-                                effectSaturation,
-                                effectVignette,
-                                effectFilterMode
-                            ) { b, c, s, v, mode ->
-                                effectBrightness = b
-                                effectContrast = c
-                                effectSaturation = s
-                                effectVignette = v
-                                effectFilterMode = mode
-                                if (compositorPtr != 0L) {
-                                    NativeEngineBridge.nativeSetGpuShaderEffects(compositorPtr, b, c, s, v, mode)
-                                    renderCurrentFrame()
+                                context = this@MainActivity,
+                                brightness = effectBrightness,
+                                contrast = effectContrast,
+                                saturation = effectSaturation,
+                                vignette = effectVignette,
+                                filterMode = effectFilterMode,
+                                selectedLayerName = track?.name,
+                                motionBlurEnabled = curMbEnabled,
+                                motionBlurStrength = curMbStrength,
+                                onMotionBlurChanged = { enabled, strength ->
+                                    if (track != null) {
+                                        NativeEngineBridge.nativeSetLayerMotionBlur(currentProjectPtr, track.id, enabled, strength.toDouble())
+                                        track.motionBlurEnabled = enabled
+                                        track.motionBlurStrength = strength
+                                        timelineView.invalidate()
+                                        if (::graphTimelineView.isInitialized) {
+                                            graphTimelineView.invalidate()
+                                        }
+                                        renderCurrentFrame()
+                                        takeProjectSnapshot()
+                                    }
+                                },
+                                onEffectsChanged = { b, c, s, v, mode ->
+                                    effectBrightness = b
+                                    effectContrast = c
+                                    effectSaturation = s
+                                    effectVignette = v
+                                    effectFilterMode = mode
+                                    if (compositorPtr != 0L) {
+                                        NativeEngineBridge.nativeSetGpuShaderEffects(compositorPtr, b, c, s, v, mode)
+                                        renderCurrentFrame()
+                                    }
                                 }
-                            }.show()
+                            ).show()
+                        }
+                        "Audio Mixer" -> {
+                            val curVol = audioPlaybackManager?.getVolume() ?: 1.0f
+                            val isMuted = audioPlaybackManager?.isMuted() ?: false
+                            val track = timelineView.tracks.find { it.type == "AUDIO" } ?: timelineView.tracks.firstOrNull()
+                            AudioMixerDialog(
+                                context = this@MainActivity,
+                                volume = curVol,
+                                isMuted = isMuted,
+                                audioTrackName = track?.name ?: "Master Audio",
+                                onVolumeChanged = { vol -> audioPlaybackManager?.setVolume(vol) },
+                                onMuteToggled = { muted -> audioPlaybackManager?.toggleMute() }
+                            ).show()
                         }
                         "Duplikat" -> {
                             val track = timelineView.tracks.getOrNull(timelineView.selectedTrackIndex)
@@ -961,6 +1202,7 @@ class MainActivity : Activity() {
                                 if (NativeEngineBridge.nativeDuplicateLayer(currentProjectPtr, track.id)) {
                                     populateTimelineTracks()
                                     renderCurrentFrame()
+                                    takeProjectSnapshot()
                                     Toast.makeText(this@MainActivity, "Layer '${track.name}' diduplikat", Toast.LENGTH_SHORT).show()
                                 }
                             } else {
@@ -973,6 +1215,7 @@ class MainActivity : Activity() {
                                 if (NativeEngineBridge.nativeRemoveLayer(currentProjectPtr, track.id)) {
                                     populateTimelineTracks()
                                     renderCurrentFrame()
+                                    takeProjectSnapshot()
                                     Toast.makeText(this@MainActivity, "Layer '${track.name}' dihapus", Toast.LENGTH_SHORT).show()
                                 }
                             } else {
@@ -987,6 +1230,7 @@ class MainActivity : Activity() {
                                 populateTimelineTracks()
                                 timelineView.selectedTrackIndex = selIdx - 1
                                 renderCurrentFrame()
+                                takeProjectSnapshot()
                                 Toast.makeText(this@MainActivity, "Layer dinaikkan", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -998,6 +1242,7 @@ class MainActivity : Activity() {
                                 populateTimelineTracks()
                                 timelineView.selectedTrackIndex = selIdx + 1
                                 renderCurrentFrame()
+                                takeProjectSnapshot()
                                 Toast.makeText(this@MainActivity, "Layer diturunkan", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -1041,6 +1286,7 @@ class MainActivity : Activity() {
                         track.keyframeFrames.sort()
                     }
                     timelineView.invalidate()
+                    takeProjectSnapshot()
                     Toast.makeText(this@MainActivity, "Kunci ditambahkan di Frame $currentFrame", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -1073,6 +1319,7 @@ class MainActivity : Activity() {
                         )
                         populateTimelineTracks()
                         renderCurrentFrame()
+                        takeProjectSnapshot()
                     },
                     onAddMedia = { path, isVid, name ->
                         val id = "media_${System.currentTimeMillis() % 1000}"
@@ -1081,6 +1328,7 @@ class MainActivity : Activity() {
                         )
                         populateTimelineTracks()
                         renderCurrentFrame()
+                        takeProjectSnapshot()
                     },
                     onAddAudio = { path, name ->
                         val id = "audio_${System.currentTimeMillis() % 1000}"
@@ -1090,6 +1338,7 @@ class MainActivity : Activity() {
                             currentProjectPtr, id, name, path, 0, projectDurationFrames
                         )
                         populateTimelineTracks()
+                        takeProjectSnapshot()
                     },
                     onAddText = { txt, name ->
                         val id = "text_${System.currentTimeMillis() % 1000}"
@@ -1098,6 +1347,7 @@ class MainActivity : Activity() {
                         )
                         populateTimelineTracks()
                         renderCurrentFrame()
+                        takeProjectSnapshot()
                         Toast.makeText(this@MainActivity, "Layer Teks Ditambahkan", Toast.LENGTH_SHORT).show()
                     },
                     onPickMedia = { isVid ->
@@ -1171,6 +1421,7 @@ class MainActivity : Activity() {
                         }
                         populateTimelineTracks()
                         renderCurrentFrame()
+                        takeProjectSnapshot()
                         Toast.makeText(this@MainActivity, "Preset VFX '$presetName' Diterapkan", Toast.LENGTH_SHORT).show()
                     }
                 ).show()
@@ -1416,6 +1667,7 @@ class MainActivity : Activity() {
                     timelineView.currentFrame = newFrame
                     timelineView.invalidate()
                     renderCurrentFrame()
+                    takeProjectSnapshot()
                 }
 
                 onClipSpanChanged = { track ->
@@ -1435,6 +1687,7 @@ class MainActivity : Activity() {
                     updateProjectDurationFromLayers()
                     timelineView.invalidate()
                     renderCurrentFrame()
+                    takeProjectSnapshot()
                 }
             }
             addView(graphTimelineView)
@@ -1451,61 +1704,118 @@ class MainActivity : Activity() {
 
             val controlsContainer = LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.VERTICAL
-                setPadding(dp(10), dp(6), dp(10), dp(10))
+                setPadding(dp(12), dp(8), dp(12), dp(16))
             }
 
-            // 3a. Keyframe Header & Actions (+ Tambah, 🗑 Hapus)
-            val kfHeaderRow = LinearLayout(this@MainActivity).apply {
+            // 3a. Dedicated Full-Width Keyframe Status Banner Card
+            val kfStatusCard = LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, 0, 0, dp(4))
+                setBackgroundColor(MotionTheme.SURFACE_CONTAINER)
+                setPadding(dp(12), dp(8), dp(12), dp(8))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(6) }
             }
 
             graphKeyframeLabel = TextView(this@MainActivity).apply {
-                text = "Keyframe: Frame 0 (0.00s)"
+                text = "◆ KEYFRAME AKTIF • Frame 0 (0.00s)"
                 textSize = 11f
                 typeface = Typeface.MONOSPACE
                 setTextColor(Color.parseColor("#4ADE80"))
+                maxLines = 1
+                ellipsize = android.text.TextUtils.TruncateAt.END
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             }
-            kfHeaderRow.addView(graphKeyframeLabel)
+            kfStatusCard.addView(graphKeyframeLabel)
+            controlsContainer.addView(kfStatusCard)
+
+            // 3b. Keyframe Actions Full-Width 4-Button Row
+            val kfActionRow = LinearLayout(this@MainActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    dp(34)
+                ).apply { bottomMargin = dp(8) }
+            }
 
             val btnAddKf = Button(this@MainActivity).apply {
                 text = "+ Tambah"
                 textSize = 10f
+                typeface = Typeface.DEFAULT_BOLD
                 minHeight = 0
                 minimumHeight = 0
                 includeFontPadding = false
-                setPadding(dp(8), 0, dp(8), 0)
+                setPadding(0, 0, 0, 0)
                 gravity = Gravity.CENTER
                 setTextColor(MotionTheme.TEXT_PRIMARY)
-                setBackgroundColor(Color.parseColor("#3B82F6"))
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(28)).apply { marginEnd = dp(4) }
+                setBackgroundColor(Color.parseColor("#2563EB"))
+                layoutParams = LinearLayout.LayoutParams(0, dp(32), 1f).apply { marginEnd = dp(4) }
                 setOnClickListener { addKeyframeAtCurrentFrame() }
             }
-            kfHeaderRow.addView(btnAddKf)
+            kfActionRow.addView(btnAddKf)
 
             val btnDelKf = Button(this@MainActivity).apply {
                 text = "🗑 Hapus"
                 textSize = 10f
+                typeface = Typeface.DEFAULT_BOLD
                 minHeight = 0
                 minimumHeight = 0
                 includeFontPadding = false
-                setPadding(dp(8), 0, dp(8), 0)
+                setPadding(0, 0, 0, 0)
                 gravity = Gravity.CENTER
                 setTextColor(MotionTheme.TEXT_PRIMARY)
                 setBackgroundColor(Color.parseColor("#DC2626"))
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, dp(28))
+                layoutParams = LinearLayout.LayoutParams(0, dp(32), 1f).apply { marginEnd = dp(4) }
                 setOnClickListener { deleteKeyframeAtCurrentFrame() }
             }
-            kfHeaderRow.addView(btnDelKf)
-            controlsContainer.addView(kfHeaderRow)
+            kfActionRow.addView(btnDelKf)
 
-            // 3b. Keyframe Time Relocation Row (Slider & Nudge buttons: -1s, -0.1s, +0.1s, +1s)
+            val btnCopyKf = Button(this@MainActivity).apply {
+                text = "📋 Salin"
+                textSize = 10f
+                typeface = Typeface.DEFAULT_BOLD
+                minHeight = 0
+                minimumHeight = 0
+                includeFontPadding = false
+                setPadding(0, 0, 0, 0)
+                gravity = Gravity.CENTER
+                setTextColor(MotionTheme.TEXT_PRIMARY)
+                setBackgroundColor(MotionTheme.SURFACE_HIGH)
+                layoutParams = LinearLayout.LayoutParams(0, dp(32), 1f).apply { marginEnd = dp(4) }
+                setOnClickListener { copyKeyframeAtCurrentFrame() }
+            }
+            kfActionRow.addView(btnCopyKf)
+
+            val btnPasteKf = Button(this@MainActivity).apply {
+                text = "📌 Tempel"
+                textSize = 10f
+                typeface = Typeface.DEFAULT_BOLD
+                minHeight = 0
+                minimumHeight = 0
+                includeFontPadding = false
+                setPadding(0, 0, 0, 0)
+                gravity = Gravity.CENTER
+                setTextColor(MotionTheme.TEXT_PRIMARY)
+                setBackgroundColor(Color.parseColor("#7C3AED"))
+                layoutParams = LinearLayout.LayoutParams(0, dp(32), 1f)
+                setOnClickListener { pasteKeyframeAtCurrentFrame() }
+            }
+            kfActionRow.addView(btnPasteKf)
+            controlsContainer.addView(kfActionRow)
+
+            // 3c. Keyframe Time Relocation Row (Slider & Nudge buttons: -1s, -0.1s, +0.1s, +1s)
             val kfTimeRelocateRow = LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, 0, 0, dp(6))
+                setBackgroundColor(MotionTheme.SURFACE_CONTAINER)
+                setPadding(dp(8), dp(4), dp(8), dp(4))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
             }
 
             val tvPindah = TextView(this@MainActivity).apply {
@@ -1545,10 +1855,13 @@ class MainActivity : Activity() {
             kfTimeRelocateRow.addView(btnNudgeP1)
             controlsContainer.addView(kfTimeRelocateRow)
 
-            // 3c. Property Selector Row
+            // 3d. Property Selector Row
             val propRow = LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 0, 0, dp(6))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(6) }
             }
 
             val propButtons = mutableListOf<Button>()
@@ -1593,11 +1906,16 @@ class MainActivity : Activity() {
             }
             controlsContainer.addView(propRow)
 
-            // 3d. Property Value Readout & Value Adjustment Slider
+            // 3e. Property Value Readout & Value Adjustment Slider
             val propValueRow = LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, 0, 0, dp(6))
+                setBackgroundColor(MotionTheme.SURFACE_CONTAINER)
+                setPadding(dp(8), dp(4), dp(8), dp(4))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) }
             }
 
             graphPropertyValueReadout = TextView(this@MainActivity).apply {
@@ -1605,7 +1923,7 @@ class MainActivity : Activity() {
                 textSize = 10f
                 typeface = Typeface.MONOSPACE
                 setTextColor(MotionTheme.TEXT_PRIMARY)
-                layoutParams = LinearLayout.LayoutParams(dp(150), LinearLayout.LayoutParams.WRAP_CONTENT)
+                layoutParams = LinearLayout.LayoutParams(dp(130), LinearLayout.LayoutParams.WRAP_CONTENT)
             }
             propValueRow.addView(graphPropertyValueReadout)
 
@@ -1626,12 +1944,15 @@ class MainActivity : Activity() {
             propValueRow.addView(graphPropertyValueSeekBar)
             controlsContainer.addView(propValueRow)
 
-            // 3e. Curve Editor Canvas View
+            // 3f. Curve Editor Canvas View (1:1 Aspect Ratio)
             graphEditorView = GraphEditorView(this@MainActivity).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    dp(160)
-                )
+                    dp(260)
+                ).apply {
+                    topMargin = dp(2)
+                    bottomMargin = dp(6)
+                }
                 onCurveChanged = { ox, oy, ix, iy ->
                     val track = timelineView.tracks.getOrNull(timelineView.selectedTrackIndex)
                         ?: timelineView.tracks.firstOrNull()?.also { timelineView.selectedTrackIndex = 0 }
@@ -1666,10 +1987,16 @@ class MainActivity : Activity() {
             }
             controlsContainer.addView(graphEditorView)
 
-            // 3f. Easing Presets Row
+            // 3g. Easing Presets Row
             val presetRow = LinearLayout(this@MainActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                setPadding(0, dp(6), 0, dp(4))
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = dp(2)
+                    bottomMargin = dp(4)
+                }
             }
 
             val presets = listOf(
@@ -1677,6 +2004,8 @@ class MainActivity : Activity() {
                 Pair("EASE_IN", "IN"),
                 Pair("EASE_OUT", "OUT"),
                 Pair("EASE_IN_OUT", "IN-OUT"),
+                Pair("BOUNCE", "POP"),
+                Pair("FAST_SNAP", "SNAP"),
                 Pair("HOLD", "HOLD")
             )
             for (pr in presets) {
@@ -1688,7 +2017,7 @@ class MainActivity : Activity() {
                     includeFontPadding = false
                     setPadding(0, 0, 0, 0)
                     gravity = Gravity.CENTER
-                    layoutParams = LinearLayout.LayoutParams(0, dp(30), 1f).apply { marginEnd = dp(4) }
+                    layoutParams = LinearLayout.LayoutParams(0, dp(30), 1f).apply { marginEnd = dp(3) }
                     setTextColor(MotionTheme.TEXT_PRIMARY)
                     setBackgroundColor(MotionTheme.SURFACE_CONTAINER)
                     setOnClickListener {
@@ -1760,6 +2089,7 @@ class MainActivity : Activity() {
                 timelineView.invalidate()
                 renderCurrentFrame()
                 updateGraphWorkspaceControls()
+                takeProjectSnapshot()
                 Toast.makeText(this, "Keyframe dipindah ke frame $targetFrame (${String.format("%.2fs", targetFrame / projectFps)})", Toast.LENGTH_SHORT).show()
             }
         } else {
@@ -1785,6 +2115,7 @@ class MainActivity : Activity() {
                 timelineView.invalidate()
                 renderCurrentFrame()
                 updateGraphWorkspaceControls()
+                takeProjectSnapshot()
             }
         }
     }
@@ -1822,6 +2153,7 @@ class MainActivity : Activity() {
         timelineView.invalidate()
         renderCurrentFrame()
         updateGraphWorkspaceControls()
+        takeProjectSnapshot()
         Toast.makeText(this, "+ Keyframe ditambahkan di frame $currentFrame", Toast.LENGTH_SHORT).show()
     }
 
@@ -1841,8 +2173,122 @@ class MainActivity : Activity() {
             renderCurrentFrame()
             updateGraphWorkspaceControls()
             Toast.makeText(this, "Keyframe di frame $exact dihapus", Toast.LENGTH_SHORT).show()
+            takeProjectSnapshot()
         } else {
             Toast.makeText(this, "Tidak ada keyframe di frame ini", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun copyKeyframeAtCurrentFrame() {
+        val track = timelineView.tracks.getOrNull(timelineView.selectedTrackIndex)
+            ?: timelineView.tracks.firstOrNull()?.also { timelineView.selectedTrackIndex = 0 }
+        if (track == null) {
+            Toast.makeText(this, "Pilih layer terlebih dahulu", Toast.LENGTH_SHORT).show()
+            return
+        }
+        copiedTransformState = NativeEngineBridge.evaluateTransform(currentProjectPtr, track.id, currentFrame.toDouble())
+        Toast.makeText(this, "Keyframe di frame $currentFrame disalin", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun pasteKeyframeAtCurrentFrame() {
+        val state = copiedTransformState
+        if (state == null) {
+            Toast.makeText(this, "Salin keyframe terlebih dahulu", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val track = timelineView.tracks.getOrNull(timelineView.selectedTrackIndex)
+            ?: timelineView.tracks.firstOrNull()?.also { timelineView.selectedTrackIndex = 0 }
+        if (track == null) {
+            Toast.makeText(this, "Pilih layer terlebih dahulu", Toast.LENGTH_SHORT).show()
+            return
+        }
+        NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "posX", currentFrame, state.posX, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+        NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "posY", currentFrame, state.posY, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+        NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleX", currentFrame, state.scaleX, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+        NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "scaleY", currentFrame, state.scaleY, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+        NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "rotation", currentFrame, state.rotation, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+        NativeEngineBridge.nativeAddOrUpdateKeyframe(currentProjectPtr, track.id, "opacity", currentFrame, state.opacity, NativeEngineBridge.InterpolationMode.BEZIER.value, 0.42, 0.0, 0.58, 1.0)
+        if (!track.keyframeFrames.contains(currentFrame)) {
+            track.keyframeFrames.add(currentFrame)
+            track.keyframeFrames.sort()
+        }
+        timelineView.invalidate()
+        if (::graphTimelineView.isInitialized) {
+            graphTimelineView.invalidate()
+        }
+        renderCurrentFrame()
+        updateGraphWorkspaceControls()
+        takeProjectSnapshot()
+        Toast.makeText(this, "Keyframe ditempel di frame $currentFrame", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun takeProjectSnapshot() {
+        if (currentProjectPtr != 0L) {
+            try {
+                val json = NativeEngineBridge.nativeGetProjectJson(currentProjectPtr)
+                historyManager.recordSnapshot(json)
+                updateUndoRedoButtonStates()
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun performUndo() {
+        val json = historyManager.undo()
+        if (json != null) {
+            restoreProjectFromJson(json)
+            Toast.makeText(this, "↶ Undo Berhasil", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Tidak ada aksi untuk di-undo", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun performRedo() {
+        val json = historyManager.redo()
+        if (json != null) {
+            restoreProjectFromJson(json)
+            Toast.makeText(this, "↷ Redo Berhasil", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Tidak ada aksi untuk di-redo", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun restoreProjectFromJson(json: String) {
+        try {
+            val loadedPtr = NativeEngineBridge.nativeLoadProjectJson(json)
+            if (loadedPtr != 0L) {
+                if (currentProjectPtr != 0L) {
+                    NativeEngineBridge.nativeDestroyProject(currentProjectPtr)
+                }
+                currentProjectPtr = loadedPtr
+                populateTimelineTracks()
+                viewportView.updateProjectAspect(projectWidth, projectHeight)
+                viewportView.activeSurface?.let { surf ->
+                    if (compositorPtr != 0L) {
+                        NativeEngineBridge.nativeInitializeGpuCompositor(compositorPtr, surf, projectWidth, projectHeight)
+                        val r = viewportView.getCanvasRect()
+                        NativeEngineBridge.nativeUpdateGpuViewport(compositorPtr, r.left, r.top, r.width(), r.height())
+                        NativeEngineBridge.nativeSetGpuShaderEffects(compositorPtr, effectBrightness, effectContrast, effectSaturation, effectVignette, effectFilterMode)
+                    }
+                }
+                if (::graphTimelineView.isInitialized) {
+                    graphTimelineView.totalDurationFrames = projectDurationFrames
+                    graphTimelineView.tracks.clear()
+                    graphTimelineView.tracks.addAll(timelineView.tracks)
+                    graphTimelineView.selectedTrackIndex = timelineView.selectedTrackIndex
+                    graphTimelineView.invalidate()
+                }
+                renderCurrentFrame()
+                updateUndoRedoButtonStates()
+            }
+        } catch (_: Exception) {}
+    }
+
+    private fun updateUndoRedoButtonStates() {
+        if (::btnUndo.isInitialized && ::btnRedo.isInitialized) {
+            btnUndo.isEnabled = historyManager.canUndo
+            btnUndo.alpha = if (historyManager.canUndo) 1.0f else 0.35f
+            btnRedo.isEnabled = historyManager.canRedo
+            btnRedo.alpha = if (historyManager.canRedo) 1.0f else 0.35f
         }
     }
 
@@ -3055,6 +3501,11 @@ class MainActivity : Activity() {
                             else -> 0
                         }
                         val outTransDur = lObj.optLong("outTransitionDuration", 0L)
+                        val mediaObj = lObj.optJSONObject("media")
+                        val mWidth = mediaObj?.optInt("originalWidth", 0) ?: 0
+                        val mHeight = mediaObj?.optInt("originalHeight", 0) ?: 0
+                        val mbEnabled = lObj.optBoolean("motionBlurEnabled", false)
+                        val mbStrength = lObj.optDouble("motionBlurStrength", 1.0).toFloat()
 
                         timelineView.tracks.add(
                             TimelineDeckView.TrackInfo(
@@ -3069,7 +3520,11 @@ class MainActivity : Activity() {
                                 inTransition = inTransId,
                                 inTransitionDuration = inTransDur,
                                 outTransition = outTransId,
-                                outTransitionDuration = outTransDur
+                                outTransitionDuration = outTransDur,
+                                mediaWidth = mWidth,
+                                mediaHeight = mHeight,
+                                motionBlurEnabled = mbEnabled,
+                                motionBlurStrength = mbStrength
                             )
                         )
                     }
@@ -3174,10 +3629,28 @@ class MainActivity : Activity() {
             val state = NativeEngineBridge.evaluateTransform(currentProjectPtr, track.id, currentFrame.toDouble())
             if (state != null) {
                 val lw = if (track.type == "TEXT") (track.name.length * 48f * 0.85f).coerceAtLeast(140f)
+                         else if (track.type == "MEDIA") {
+                             val maxDim = (projectWidth * 0.6f).coerceAtLeast(400f)
+                             if (track.mediaWidth > 0 && track.mediaHeight > 0) {
+                                 val aspect = track.mediaWidth.toFloat() / track.mediaHeight.toFloat()
+                                 if (aspect >= 1f) maxDim else maxDim * aspect
+                             } else {
+                                 maxDim
+                             }
+                         }
                          else if (track.name.contains("Bar")) 720f
                          else if (track.name.contains("Wipe")) 1080f
                          else 260f
                 val lh = if (track.type == "TEXT") 64f
+                         else if (track.type == "MEDIA") {
+                             val maxDim = (projectWidth * 0.6f).coerceAtLeast(400f)
+                             if (track.mediaWidth > 0 && track.mediaHeight > 0) {
+                                 val aspect = track.mediaWidth.toFloat() / track.mediaHeight.toFloat()
+                                 if (aspect >= 1f) maxDim / aspect else maxDim
+                             } else {
+                                 maxDim
+                             }
+                         }
                          else if (track.name.contains("Bar")) 140f
                          else if (track.name.contains("Wipe")) 1920f
                          else 260f

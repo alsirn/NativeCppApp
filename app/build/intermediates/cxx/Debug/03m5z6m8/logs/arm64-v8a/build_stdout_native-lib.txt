@@ -1,2 +1,8 @@
 ninja: Entering directory `C:\Users\zahra\NativeCppApp\app\.cxx\Debug\03m5z6m8\arm64-v8a'
-ninja: no work to do.
+[1/7] Building CXX object CMakeFiles/native-lib.dir/core/model/Layer.cpp.o
+[2/7] Building CXX object CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o
+[3/7] Building CXX object CMakeFiles/native-lib.dir/native-lib.cpp.o
+[4/7] Building CXX object CMakeFiles/native-lib.dir/core/model/Project.cpp.o
+[5/7] Building CXX object CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o
+[6/7] Building CXX object CMakeFiles/native-lib.dir/core/io/ProjectSerializer.cpp.o
+[7/7] Linking CXX shared library C:\Users\zahra\NativeCppApp\app\build\intermediates\cxx\Debug\03m5z6m8\obj\arm64-v8a\libnative-lib.so

@@ -301,6 +301,8 @@ std::string ProjectSerializer::serializeToJson(const Project& project) {
         ss << "      \"inTransitionDuration\": " << layer->inTransitionDuration << ",\n";
         ss << "      \"outTransition\": \"" << transitionTypeToString(layer->outTransition) << "\",\n";
         ss << "      \"outTransitionDuration\": " << layer->outTransitionDuration << ",\n";
+        ss << "      \"motionBlurEnabled\": " << (layer->motionBlurEnabled ? "true" : "false") << ",\n";
+        ss << "      \"motionBlurStrength\": " << layer->motionBlurStrength << ",\n";
 
         if (layer->type == LayerType::SHAPE) {
             ss << "      \"shape\": {\n";
@@ -399,6 +401,8 @@ bool ProjectSerializer::deserializeFromJson(const std::string& jsonString, Proje
             layer->inTransitionDuration = lNode.getInt64("inTransitionDuration", 0);
             layer->outTransition = stringToTransitionType(lNode.getString("outTransition", "NONE"));
             layer->outTransitionDuration = lNode.getInt64("outTransitionDuration", 0);
+            layer->motionBlurEnabled = lNode.getBool("motionBlurEnabled", false);
+            layer->motionBlurStrength = lNode.getDouble("motionBlurStrength", 1.0);
 
             if (type == LayerType::SHAPE) {
                 const auto& sNode = lNode.get("shape");

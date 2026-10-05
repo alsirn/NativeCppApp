@@ -57,3 +57,15 @@
 27	1049	8125336509699473	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86_64/libnative-lib.so	b7093296f4f1635d
 116	1301	8125527293369263	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86_64/libnative-lib.so	b7093296f4f1635d
 57	754	8125574267242873	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86_64/libnative-lib.so	b7093296f4f1635d
+40	1388	8126111086628213	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86_64/libnative-lib.so	b7093296f4f1635d
+56	2597	8126140413368656	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	e47692e511fca0d0
+30	3412	8126140421504042	CMakeFiles/native-lib.dir/native-lib.cpp.o	7d4e9dc489ce350a
+43	4014	8126140427310374	CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o	68890b08b1c5fb65
+4015	4349	8126140430887667	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86_64/libnative-lib.so	b7093296f4f1635d
+62	8748	8126182014649959	CMakeFiles/native-lib.dir/core/model/Layer.cpp.o	e13c1280e8b7e5f0
+82	9643	8126182025070229	CMakeFiles/native-lib.dir/core/render/GpuCompositor.cpp.o	e47692e511fca0d0
+41	10926	8126182034014028	CMakeFiles/native-lib.dir/native-lib.cpp.o	7d4e9dc489ce350a
+150	11217	8126182040897703	CMakeFiles/native-lib.dir/core/model/Project.cpp.o	e95b67b4b4363bd7
+101	12124	8126182049192786	CMakeFiles/native-lib.dir/core/io/ProjectSerializer.cpp.o	3543296b57222b45
+127	13207	8126182061104794	CMakeFiles/native-lib.dir/core/render/SoftwarePreviewRenderer.cpp.o	68890b08b1c5fb65
+13214	14444	8126182073784665	C:/Users/zahra/NativeCppApp/app/build/intermediates/cxx/Debug/03m5z6m8/obj/x86_64/libnative-lib.so	b7093296f4f1635d

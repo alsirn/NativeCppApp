@@ -25,7 +25,11 @@ class TimelineDeckView(context: Context) : View(context) {
         var inTransition: Int = 0,
         var inTransitionDuration: Long = 0,
         var outTransition: Int = 0,
-        var outTransitionDuration: Long = 0
+        var outTransitionDuration: Long = 0,
+        var mediaWidth: Int = 0,
+        var mediaHeight: Int = 0,
+        var motionBlurEnabled: Boolean = false,
+        var motionBlurStrength: Float = 1.0f
     )
 
     var currentFrame: Long = 30
@@ -232,7 +236,39 @@ class TimelineDeckView(context: Context) : View(context) {
             // Track Name
             textPaint.color = if (isSelected) MotionTheme.TEXT_PRIMARY else MotionTheme.TEXT_SECONDARY
             textPaint.textSize = 11f * density
-            canvas.drawText(track.name, headerRect.left + 14f * density, headerRect.centerY() + 4f * density, textPaint)
+            val maxTextWidth = if (track.motionBlurEnabled) {
+                (headerRect.width() - 36f * density).coerceAtLeast(16f * density)
+            } else {
+                (headerRect.width() - 18f * density).coerceAtLeast(16f * density)
+            }
+            val displayName = android.text.TextUtils.ellipsize(track.name, android.text.TextPaint(textPaint), maxTextWidth, android.text.TextUtils.TruncateAt.END).toString()
+            canvas.drawText(displayName, headerRect.left + 14f * density, headerRect.centerY() + 4f * density, textPaint)
+
+            // Motion Blur [MB] Badge
+            if (track.motionBlurEnabled) {
+                val mbBadgePaint = Paint().apply {
+                    color = Color.parseColor("#06B6D4") // Cyan
+                    style = Paint.Style.FILL
+                    isAntiAlias = true
+                }
+                val mbTextPaint = Paint().apply {
+                    color = Color.BLACK
+                    textSize = 7.5f * density
+                    typeface = Typeface.DEFAULT_BOLD
+                    isAntiAlias = true
+                    textAlign = Paint.Align.CENTER
+                }
+                val badgeW = 18f * density
+                val badgeH = 11f * density
+                val badgeRect = RectF(
+                    headerRect.right - badgeW - 3f * density,
+                    headerRect.top + 4f * density,
+                    headerRect.right - 3f * density,
+                    headerRect.top + 4f * density + badgeH
+                )
+                canvas.drawRoundRect(badgeRect, 3f * density, 3f * density, mbBadgePaint)
+                canvas.drawText("MB", badgeRect.centerX(), badgeRect.centerY() + 2.5f * density, mbTextPaint)
+            }
 
             // Clip lane area
             val laneLeft = headerWidth + 8f

@@ -100,6 +100,9 @@ class AudioPlaybackManager(private val context: Context) {
         } catch (_: Exception) {}
     }
 
+    fun getVolume(): Float = volume
+    fun isMuted(): Boolean = isMuted
+
     private fun startSyntheticAudio(startMs: Int) {
         if (isMuted || isSynthPlaying) return
         isSynthPlaying = true

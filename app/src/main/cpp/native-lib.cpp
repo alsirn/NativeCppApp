@@ -133,6 +133,14 @@ Java_com_example_nativecppapp_NativeEngineBridge_nativeAddMediaLayer(
     layer->mediaData.filePath = pathStr;
     layer->mediaData.type = isVideo ? MediaType::VIDEO : MediaType::IMAGE;
 
+    if (!isVideo && !pathStr.empty()) {
+        int w = 0, h = 0;
+        if (SoftwarePreviewRenderer::getImageDimensions(pathStr, w, h)) {
+            layer->mediaData.originalWidth = w;
+            layer->mediaData.originalHeight = h;
+        }
+    }
+
     project->addLayer(layer);
     return JNI_TRUE;
 }
@@ -247,6 +255,55 @@ Java_com_example_nativecppapp_NativeEngineBridge_nativeReorderLayer(
 
     project->reorderLayer(idStr, newIndex);
     return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_example_nativecppapp_NativeEngineBridge_nativeSetLayerMotionBlur(
+        JNIEnv* env, jobject /* this */,
+        jlong projectPtr, jstring jLayerId, jboolean enabled, jdouble strength) {
+    auto* project = getProject(projectPtr);
+    if (!project) return JNI_FALSE;
+
+    const char* idC = env->GetStringUTFChars(jLayerId, nullptr);
+    std::string idStr = idC ? idC : "";
+    if (idC) env->ReleaseStringUTFChars(jLayerId, idC);
+
+    auto layer = project->getLayer(idStr);
+    if (!layer) return JNI_FALSE;
+
+    layer->motionBlurEnabled = (enabled == JNI_TRUE);
+    layer->motionBlurStrength = strength;
+    return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_example_nativecppapp_NativeEngineBridge_nativeGetLayerMotionBlurEnabled(
+        JNIEnv* env, jobject /* this */,
+        jlong projectPtr, jstring jLayerId) {
+    auto* project = getProject(projectPtr);
+    if (!project) return JNI_FALSE;
+
+    const char* idC = env->GetStringUTFChars(jLayerId, nullptr);
+    std::string idStr = idC ? idC : "";
+    if (idC) env->ReleaseStringUTFChars(jLayerId, idC);
+
+    auto layer = project->getLayer(idStr);
+    return (layer && layer->motionBlurEnabled) ? JNI_TRUE : JNI_FALSE;
+}
+
+JNIEXPORT jdouble JNICALL
+Java_com_example_nativecppapp_NativeEngineBridge_nativeGetLayerMotionBlurStrength(
+        JNIEnv* env, jobject /* this */,
+        jlong projectPtr, jstring jLayerId) {
+    auto* project = getProject(projectPtr);
+    if (!project) return 1.0;
+
+    const char* idC = env->GetStringUTFChars(jLayerId, nullptr);
+    std::string idStr = idC ? idC : "";
+    if (idC) env->ReleaseStringUTFChars(jLayerId, idC);
+
+    auto layer = project->getLayer(idStr);
+    return layer ? layer->motionBlurStrength : 1.0;
 }
 
 JNIEXPORT jboolean JNICALL
